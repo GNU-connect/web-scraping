@@ -132,6 +132,7 @@ ENV/
 env.bak/
 venv.bak/
 connect-gnu/
+myenv/
 
 # Spyder project settings
 .spyderproject
