@@ -2,11 +2,11 @@ from src.supabase_utils import supabase
 import requests
 from bs4 import BeautifulSoup
 
-# response = supabase().table('inmun-category').select("*").execute()
-# datas = response.data
+response = supabase().table('inmun-category').select("*").execute()
+datas = response.data
 
-datas = [{
-    'id': 11, 'category': '공지사항', 'mi': 3286, 'bbs_id': 1463, 'created_at': '2024-03-15T08:39:15.494631+00:00', 'department': 'russia', 'last_board_id': 0}]
+# datas = [{
+#     'id': 11, 'category': '공지사항', 'mi': 3286, 'bbs_id': 1463, 'created_at': '2024-03-15T08:39:15.494631+00:00', 'department': 'russia', 'last_board_id': 0}]
 
 for data in datas:
     category_id, department, mi, bbs_id, last_board_id = data['id'], data['department'], data['mi'], data['bbs_id'], data['last_board_id']
@@ -20,11 +20,15 @@ for data in datas:
       
       # 게시판 id가 '공지'가 아닌 것들만 가져옴
       new_notice_htmls = []
-      for idx, tag in enumerate(parsed_html.find_all('td', class_='BD_tm_none')):
-          print("Index:", idx)
+      tbody_element = parsed_html.find('tbody')
+      tr_count = len(tbody_element.find_all('tr'))
+      tags = parsed_html.find_all('td', class_='BD_tm_none')
+      # 예외 처리 (조회수 등에 의해 한 행에 tr이 두개씩 생기는 경우가 있음)
+      if len(tags) >= tr_count:
+         tags = tags[::2]
+      for tag in tags:
           if tag.text.strip().isdigit() and int(tag.text.strip()) > last_board_id:
               new_notice_htmls.append(tag.find_parent('tr'))
-
       for i in range(5):
           if i >= len(new_notice_htmls):
               break
@@ -41,10 +45,8 @@ for data in datas:
               'notice_id': notice_id,
           }
           
-          
           notice_objects.append(notice_object)
-      print(notice_objects)
-      #response = supabase().table('inmun').insert(notice_objects).execute()
+      response = supabase().table('inmun').insert(notice_objects).execute()
     except Exception as e:
       print(category_id, department, mi, bbs_id, last_board_id, e)
       continue
