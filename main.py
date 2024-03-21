@@ -2,11 +2,15 @@ from src.supabase_utils import supabase
 import requests
 from bs4 import BeautifulSoup
 
-response = supabase().table('inmun-category').select("*").execute()
+# 전역 변수
+max_num_notices = 5
+college = 'inmun'
+
+response = supabase().table(f'{college}-category').select("*").execute()
 datas = response.data
 
 # datas = [{
-#     'id': 18, 'category': '공지사항', 'mi': 10518, 'bbs_id': 1458, 'updated_at': '2024-03-15T08:39:15.494631+00:00', 'department': 'sophia', 'last_ntt_sn': 0}]
+#     'id': 40, 'category': '공지사항', 'mi': 10518, 'bbs_id': 1458, 'updated_at': '2024-03-15T08:39:15.494631+00:00', 'department': 'sophia', 'last_ntt_sn': 2229329}]
 
 for data in datas:
     category_id, department, mi, bbs_id, last_ntt_sn = data['id'], data['department'], data['mi'], data['bbs_id'], data['last_ntt_sn']
@@ -35,11 +39,26 @@ for data in datas:
               'ntt_sn': int(ntt_sn),
           }
           notice_objects.append(notice_object)
+      
       # ntt_sn 기준으로 내림차순 뒤, 5개만 가져온다.
       result = sorted(notice_objects, key=lambda x: x['ntt_sn'], reverse=True)[:5]
+
+      # 공지사항 카테고리의 last_ntt_sn을 업데이트한다.
+      #supabase().table(f'{college}-category').update({'last_ntt_sn': int(result[0]['ntt_sn'])}).eq('id', category_id).execute()
+
+      # 해당 학과 카테고리의 공지사항을 조회하여 개수를 확인한다.
+      existing_notices = supabase().from_(f'{college}-notice').select('id, ntt_sn').eq('category_id', category_id).execute().data
       
-      supabase().table('inmun-category').update({'last_ntt_sn': int(result[0]['ntt_sn'])}).eq('id', category_id).execute()
-      supabase().table('inmun').insert(result).execute()
+      # 만약 해당 학과 카테고리 테이블에 공지사항의 자리가 충분하다면, 새로운 공지사항을 삽입한다.
+      if len(result) <= max_num_notices - len(existing_notices):
+          supabase().table(f'{college}-notice').insert(result).execute()
+      # 충분하지 않다면, 오래된 공지사항의 자리부터 새로운 공지사항으로 교체한다.
+      else:
+          for newest_notice in result:
+            oldest_notice = min(existing_notices, key=lambda x: x['ntt_sn'])
+            oldest_notice_id = oldest_notice['id']
+            supabase().table(f'{college}-notice').update(newest_notice).eq('id', oldest_notice_id).execute()
+         
     except Exception as e:
       print(category_id, department, mi, bbs_id, e)
       continue
