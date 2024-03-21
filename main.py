@@ -6,10 +6,10 @@ response = supabase().table('inmun-category').select("*").execute()
 datas = response.data
 
 # datas = [{
-#     'id': 11, 'category': '공지사항', 'mi': 3286, 'bbs_id': 1463, 'created_at': '2024-03-15T08:39:15.494631+00:00', 'department': 'russia', 'last_board_id': 0}]
+#     'id': 18, 'category': '공지사항', 'mi': 10518, 'bbs_id': 1458, 'updated_at': '2024-03-15T08:39:15.494631+00:00', 'department': 'sophia', 'last_ntt_sn': 0}]
 
 for data in datas:
-    category_id, department, mi, bbs_id, last_board_id = data['id'], data['department'], data['mi'], data['bbs_id'], data['last_board_id']
+    category_id, department, mi, bbs_id, last_ntt_sn = data['id'], data['department'], data['mi'], data['bbs_id'], data['last_ntt_sn']
     try:
       notice_objects = []
       base_url = f'https://www.gnu.ac.kr/{department}/na/ntt/'
@@ -18,37 +18,30 @@ for data in datas:
       request = requests.get(department_board_url)
       parsed_html = BeautifulSoup(request.text, 'html.parser')
       
-      # 게시판 id가 '공지'가 아닌 것들만 가져옴
-      new_notice_htmls = []
       tbody_element = parsed_html.find('tbody')
-      tr_count = len(tbody_element.find_all('tr'))
-      tags = parsed_html.find_all('td', class_='BD_tm_none')
-      # 예외 처리 (조회수 등에 의해 한 행에 tr이 두개씩 생기는 경우가 있음)
-      if len(tags) >= tr_count:
-         tags = tags[::2]
-      for tag in tags:
-          if tag.text.strip().isdigit() and int(tag.text.strip()) > last_board_id:
-              new_notice_htmls.append(tag.find_parent('tr'))
-      for i in range(5):
-          if i >= len(new_notice_htmls):
+      new_notice_htmls = tbody_element.find_all('tr')
+
+      for new_notice_html in new_notice_htmls:
+          ntt_sn = new_notice_html.find('a', class_='nttInfoBtn')['data-id']
+          # ntt_sn가 last_ntt_sn보다 작거나 같으면 break
+          if int(ntt_sn) <= last_ntt_sn:
               break
-          new_notice_html = new_notice_htmls[i]
           notice_id = new_notice_html.find('td', class_='BD_tm_none').text.strip()
           title = new_notice_html.find('a').contents[0].strip()
-          ntt_sn = new_notice_html.find('a', class_='nttInfoBtn')['data-id']
-      
           notice_object = {
               'department': department,
               'category_id': category_id,
               'title': title,
-              'ntt_sn': ntt_sn,
-              'notice_id': notice_id,
+              'ntt_sn': int(ntt_sn),
           }
-          
           notice_objects.append(notice_object)
-      response = supabase().table('inmun').insert(notice_objects).execute()
+      # ntt_sn 기준으로 내림차순 뒤, 5개만 가져온다.
+      result = sorted(notice_objects, key=lambda x: x['ntt_sn'], reverse=True)[:5]
+      
+      supabase().table('inmun-category').update({'last_ntt_sn': int(result[0]['ntt_sn'])}).eq('id', category_id).execute()
+      supabase().table('inmun').insert(result).execute()
     except Exception as e:
-      print(category_id, department, mi, bbs_id, last_board_id, e)
+      print(category_id, department, mi, bbs_id, e)
       continue
     
 
