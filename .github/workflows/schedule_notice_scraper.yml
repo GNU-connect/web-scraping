@@ -1,4 +1,4 @@
-name: Schedule Crawler
+name: Schedule Notice Scraper
 on:
   workflow_dispatch:
   schedule:
