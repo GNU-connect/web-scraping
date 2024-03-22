@@ -1,7 +1,7 @@
 name: Schedule Crawler
 on:
   schedule:
-    - cron: "0 18-9 * * *"
+    - cron: "0 0-9 * * *"
 env:
   SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
   SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
