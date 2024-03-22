@@ -61,10 +61,10 @@ class Scraper:
             if len(result) <= max_num_notices - len(existing_notices):
                 self.insert_notices(result)
             else:
-                for newest_notice in result:
-                    oldest_notice = min(existing_notices, key=lambda x: x['ntt_sn'])
-                    oldest_notice_id = oldest_notice['id']
-                    self.update_notice(newest_notice, oldest_notice_id)
+                for i in range(len(result)):
+                    newest_notice = result[i]
+                    oldest_notice = existing_notices[i]
+                    self.update_notice(newest_notice, oldest_notice['id'])
             self.update_category_last_ntt_sn(category_id, result[0]['ntt_sn'])
             print(f"{department_en}의 {category_id}번 카테고리의 새로운 공지사항 {len(result)}개를 스크래핑했습니다.")
 
