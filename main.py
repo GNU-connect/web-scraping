@@ -14,8 +14,7 @@ def run_notice_scraper(college):
 
 if __name__ == '__main__':
     start_time = time.time()
-    #colleges = get_colleges()
-    colleges = ['css']
+    colleges = get_colleges()
 
     processes = []
     for college in colleges:
