@@ -2,6 +2,7 @@ from src.supabase_utils import supabase
 import requests
 from bs4 import BeautifulSoup
 import traceback
+from datetime import datetime
 
 max_num_notices = 5 # 스크래핑 할 공지사항 개수 (변경 X)
 
@@ -39,14 +40,20 @@ class Scraper:
             # 새로운 공지사항 확인
             for new_notice_html in new_notice_htmls:
                 ntt_sn = new_notice_html.find('a', class_='nttInfoBtn')['data-id']
+                date = new_notice_html.find_all('td')[3].text.strip()
+                date = datetime.strptime(date, '%Y.%m.%d')
                 if int(ntt_sn) <= last_ntt_sn:
                     break
+                # 너무 오래된 공지사항은 스크래핑하지 않음
+                if (datetime.now() - date).days > 30:
+                   break
                 title = new_notice_html.find('a').contents[0].strip()
                 notice_object = {
                     'department_id': department_id,
                     'category_id': category_id,
                     'title': title,
                     'ntt_sn': int(ntt_sn),
+                    'created_at': date.isoformat(),
                 }
                 notice_objects.append(notice_object)
             
