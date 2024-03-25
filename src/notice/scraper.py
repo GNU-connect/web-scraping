@@ -74,13 +74,13 @@ class Scraper:
 
             # 공지사항 삽입(또는 교체)
             existing_notices = self.get_existing_notices(category_id)
-            if len(result) <= max_num_notices - len(existing_notices):
-                self.insert_notices(result)
-            else:
-                for i in range(len(result)):
-                    newest_notice = result[i]
-                    oldest_notice = existing_notices[i]
-                    self.update_notice(newest_notice, oldest_notice['id'])
+            empty_space = max_num_notices - len(existing_notices)
+            self.insert_notices(result[:empty_space])
+            
+            for i in range(len(result[empty_space:])):
+                newest_notice = result[empty_space:][i]
+                oldest_notice = existing_notices[i]
+                self.update_notice(newest_notice, oldest_notice['id'])
             self.update_category_last_ntt_sn(category_id, result[0]['ntt_sn'])
             print(f"{department_en}의 {category_id}번 카테고리의 새로운 공지사항 {len(result)}개를 스크래핑했습니다.")
 
@@ -104,7 +104,7 @@ class Scraper:
         supabase().table(f'{self.college}-category').update({'last_ntt_sn': int(last_ntt_sn)}).eq('id', category_id).execute()
 
     def get_existing_notices(self, category_id):
-        return supabase().from_(f'{self.college}-notice').select('id, ntt_sn').eq('category_id', category_id).execute().data
+        return supabase().from_(f'{self.college}-notice').select('id, ntt_sn').eq('category_id', category_id).order('ntt_sn', desc=False).execute().data
 
     def insert_notices(self, notices):
         supabase().table(f'{self.college}-notice').insert(notices).execute()
