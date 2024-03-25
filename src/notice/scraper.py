@@ -14,7 +14,7 @@ class Scraper:
         # 학과별 카테고리 데이터 가져오기
         datas = self.get_category_data(self.college)
         if datas is None:
-          print(f'{self.college}의 카테고리 데이터를 가져오는데 실패했습니다.')
+          print(f'학과 카테고리 조회 실패: {self.college}의 카테고리 데이터를 가져오는데 실패했습니다.')
           return
         
         # 학과 카테고리별 공지사항 스크래핑
@@ -96,7 +96,6 @@ class Scraper:
     def get_category_data(self, college):
         try:
           datas = supabase().table(f'{college}-category').select(f'*, department(department_en)').execute().data
-          print(f"{college}의 카테고리 데이터를 가져왔습니다.")
           return datas
         except Exception as e:
           return None

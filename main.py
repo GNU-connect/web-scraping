@@ -4,8 +4,9 @@ from multiprocessing import Process
 from src.supabase_utils import supabase
 
 def get_colleges():
-    colleges = supabase().table('college').select('college_en').execute().data
-    college_en_list = [college['college_en'] for college in colleges]
+    colleges = supabase().table('college').select('college_en, etc_value').execute().data
+    college_en_list = [college['college_en'] for college in colleges if college['etc_value'] == False]
+    college_en_list.append('etc')
     return college_en_list
 
 def run_notice_scraper(college):
