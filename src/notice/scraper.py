@@ -52,10 +52,10 @@ class Scraper:
                 date = datetime.strptime(date, '%Y.%m.%d')
                 # 이전에 스크래핑한 공지사항은 스크래핑하지 않음
                 if int(ntt_sn) <= last_ntt_sn:
-                    break
+                    continue
                 # 너무 오래된 공지사항은 스크래핑하지 않음
                 if (datetime.now() - date).days > 30:
-                   break
+                   continue
                 title = new_notice_html.find('a').contents[0].strip()
                 notice_object = {
                     'department_id': department_id,
