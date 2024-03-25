@@ -34,14 +34,23 @@ class Scraper:
             request = requests.get(department_board_url)
             parsed_html = BeautifulSoup(request.text, 'html.parser')
 
+            thead_element = parsed_html.find('thead')
             tbody_element = parsed_html.find('tbody')
+
+            notice_headers = thead_element.find_all('th')
             new_notice_htmls = tbody_element.find_all('tr')
 
+            # 테이블 헤더 전처리
+            for i in range(len(notice_headers)):
+                notice_headers[i] = notice_headers[i].text.strip()
+            
             # 새로운 공지사항 확인
             for new_notice_html in new_notice_htmls:
                 ntt_sn = new_notice_html.find('a', class_='nttInfoBtn')['data-id']
-                date = new_notice_html.find_all('td')[3].text.strip()
+                date_idx = notice_headers.index('등록일')
+                date = new_notice_html.find_all('td')[date_idx].text.strip()
                 date = datetime.strptime(date, '%Y.%m.%d')
+                # 이전에 스크래핑한 공지사항은 스크래핑하지 않음
                 if int(ntt_sn) <= last_ntt_sn:
                     break
                 # 너무 오래된 공지사항은 스크래핑하지 않음
@@ -87,6 +96,7 @@ class Scraper:
     def get_category_data(self, college):
         try:
           datas = supabase().table(f'{college}-category').select(f'*, department(department_en)').execute().data
+          print(f"{college}의 카테고리 데이터를 가져왔습니다.")
           return datas
         except Exception as e:
           return None
