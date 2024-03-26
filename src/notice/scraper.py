@@ -6,7 +6,7 @@ from datetime import datetime
 
 max_num_notices = 5 # 스크래핑 할 공지사항 개수 (변경 X)
 
-class Scraper:
+class Notice_Scraper:
     def __init__(self, college):
         self.college = college
 
@@ -85,12 +85,8 @@ class Scraper:
             print(f"{department_en}의 {category_id}번 카테고리의 새로운 공지사항 {len(result)}개를 스크래핑했습니다.")
 
           except Exception as e:
-            tb = e.__traceback__
-            tb_info = traceback.extract_tb(tb)
-            for line in tb_info:
-                filename, line_no, func_name, source_code = line
-                print(f"{filename}:{line_no} 에서 {e.__class__.__name__} 발생")
             print(f'스크래핑 실패: {department_en}의 {category_id}번 카테고리를 {e} 의 사유로 실패했습니다.')
+            traceback.print_exc()
             continue
     
     def get_category_data(self, college):
