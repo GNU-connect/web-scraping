@@ -14,20 +14,27 @@ def run_notice_scraper(college):
     notice_scraper = Notice_Scraper(college)
     notice_scraper.scrape_notice_data()
 
+def run_cafeteria_scraper():
+    cafeteria_scraper = Cafeteria_Scraper()
+    cafeteria_scraper.delete_oldest_dishes()
+    cafeteria_scraper.scrape_cafeteria_dish_data()
+
 if __name__ == '__main__':
     start_time = time.time()
     colleges = get_colleges()
 
     processes = []
+    # 단과대학별 공지사항 스크래핑
     for college in colleges:
         process = Process(target=run_notice_scraper, args=(college,))
         processes.append(process)
         process.start()
+    # 학식 데이터 스크래핑
+    process = Process(target=run_cafeteria_scraper)
+    processes.append(process)
+    process.start()
     
     for process in processes:
         process.join()
-
-    # cafeteria_scraper = Cafeteria_Scraper()
-    # cafeteria_scraper.scrape_cafeteria_dish_data()
     
     print(f"모든 단과대학의 스크래핑이 완료되었습니다. 소요시간: {time.time() - start_time}초")
