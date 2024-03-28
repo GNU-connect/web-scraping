@@ -1,6 +1,7 @@
 import time
 from src.notice.scraper import Notice_Scraper
 from src.cafeteria.scraper import Cafeteria_Scraper
+from src.academic_calendar.scraper import Academic_Calendar_Scraper
 from multiprocessing import Process
 from src.supabase_utils import supabase
 
@@ -19,6 +20,10 @@ def run_cafeteria_scraper():
     cafeteria_scraper.delete_oldest_dishes()
     cafeteria_scraper.scrape_cafeteria_dish_data()
 
+def run_academic_calendar_scraper():
+    academic_calendar_scraper = Academic_Calendar_Scraper()
+    academic_calendar_scraper.scrape_academic_calendar_data()
+
 if __name__ == '__main__':
     start_time = time.time()
     colleges = get_colleges()
@@ -32,9 +37,13 @@ if __name__ == '__main__':
     # 학식 데이터 스크래핑
     process = Process(target=run_cafeteria_scraper)
     processes.append(process)
+    # 학사일정 데이터 스크래핑
+    process = Process(target=run_academic_calendar_scraper)
+    processes.append(process)
+
     process.start()
     
     for process in processes:
         process.join()
     
-    print(f"모든 단과대학의 스크래핑이 완료되었습니다. 소요시간: {time.time() - start_time}초")
+    print(f"모든 웹페이지의 정보 스크래핑이 완료되었습니다. 소요시간: {time.time() - start_time}초")

@@ -51,6 +51,7 @@ class Academic_Calendar_Scraper:
             }
             result.append(schedule_object)
           self.insert_schedules(result)
+          print('학사일정 데이터 스크래핑 완료')
 
         except Exception as e:
           print(e)
