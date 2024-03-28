@@ -1,5 +1,5 @@
 import time
-from .scraper import Academic_Calendar_Scraper
+from src.academic_calendar.scraper import Academic_Calendar_Scraper
 
 if __name__ == '__main__':
   start_time = time.time()
