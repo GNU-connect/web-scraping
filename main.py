@@ -37,10 +37,10 @@ if __name__ == '__main__':
     # 학식 데이터 스크래핑
     process = Process(target=run_cafeteria_scraper)
     processes.append(process)
+    process.start()
     # 학사일정 데이터 스크래핑
     process = Process(target=run_academic_calendar_scraper)
     processes.append(process)
-
     process.start()
     
     for process in processes:
