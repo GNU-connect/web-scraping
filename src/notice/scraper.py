@@ -20,8 +20,10 @@ class Notice_Scraper:
         # 학과 카테고리별 공지사항 스크래핑
         for data in datas:
           category_id = data['id']
+          category = data['category']
           department_id = data['department_id']
           department_en = data['department']['department_en']
+          department_ko = data['department']['department_ko']
           mi = data['mi']
           bbs_id = data['bbs_id']
           last_ntt_sn = data['last_ntt_sn']
@@ -82,16 +84,17 @@ class Notice_Scraper:
                 oldest_notice = existing_notices[i]
                 self.update_notice(newest_notice, oldest_notice['id'])
             self.update_category_last_ntt_sn(category_id, result[0]['ntt_sn'])
-            print(f"{department_en}의 {category_id}번 카테고리의 새로운 공지사항 {len(result)}개를 스크래핑했습니다.")
+            print(f"[공지사항] {department_ko}의 {category} 카테고리의 새로운 공지사항 {len(result)}개를 스크래핑했습니다.")
 
           except Exception as e:
-            print(f'스크래핑 실패: {department_en}의 {category_id}번 카테고리를 {e} 의 사유로 실패했습니다.')
+            print(f'[공지사항] 공지사항 데이터 조회 실패: {department_ko}의 {category} 카테고리를 {e} 의 사유로 실패했습니다.')
+            print(f'[공지사항] 해당 학과 공지사항 URL: {department_board_url}')
             traceback.print_exc()
             continue
     
     def get_category_data(self, college):
         try:
-          datas = supabase().table(f'{college}-category').select(f'*, department(department_en)').execute().data
+          datas = supabase().table(f'{college}-category').select(f'*, department(department_en, department_ko)').execute().data
           return datas
         except Exception as e:
           return None

@@ -124,10 +124,11 @@ class Cafeteria_Scraper:
               self.insert_dishes(result)
               # last_date 업데이트
               self.update_cafeteria_last_date(cafeteria_id, result[-1]['date'])
-              print(f'{campus_id}번 캠퍼스의 {cafeteria_name_ko} 새로운 식단 데이터 {len(result)}개를 스크래핑했습니다.')
+              print(f'[교내 식당] {campus_id}번 캠퍼스 {cafeteria_name_ko}의 새로운 식단 데이터 {len(result)}개를 스크래핑했습니다.')
                 
           except Exception as e:
-            print(f'식단 데이터 조회 실패: {campus_id}번 캠퍼스의 {cafeteria_name_ko} 식단 데이터를 가져오는데 실패했습니다.')
+            print(f'[교내 식당] 교내 식당 데이터 조회 실패: {campus_id}번 캠퍼스의 {cafeteria_name_ko} 식단 데이터를 가져오는데 실패했습니다.')
+            print(f'[교내 식당] 해당 교내 식당 URL: {base_url}')
             traceback.print_exc()
             return
     

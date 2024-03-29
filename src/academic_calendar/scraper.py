@@ -51,10 +51,11 @@ class Academic_Calendar_Scraper:
             }
             result.append(schedule_object)
           self.insert_schedules(result)
-          print('학사일정 데이터 스크래핑 완료')
+          print('[학사일정] 학사일정 데이터 교체 완료')
 
         except Exception as e:
-          print(e)
+          print(f'[학사일정] 학사일정 데이터 조회 실패: 학사일정 데이터를 가져오는데 실패했습니다.')
+          print(f'[학사일정] 해당 학사일정 url: {base_url}')
           traceback.print_exc()
           return
     
