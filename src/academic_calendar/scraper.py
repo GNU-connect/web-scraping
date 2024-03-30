@@ -19,7 +19,6 @@ class Academic_Calendar_Scraper:
           tbody_element = parsed_html.find('tbody')
           a_elements = tbody_element.find_all('a')
           
-          self.delete_schedules()
           result = []
           for a_element in a_elements:
             # href 속성에서 날짜 정보를 추출
@@ -50,6 +49,7 @@ class Academic_Calendar_Scraper:
               'content': content
             }
             result.append(schedule_object)
+          self.delete_schedules()
           self.insert_schedules(result)
           print('[학사일정] 학사일정 데이터 교체 완료')
 
