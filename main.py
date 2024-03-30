@@ -1,9 +1,10 @@
 import time
 from src.notice.scraper import Notice_Scraper
 from src.cafeteria.scraper import Cafeteria_Scraper
-from src.academic_calendar.scraper import Academic_Calendar_Scraper
+from src.academic_calendar.scraper import AcademicCalendarScraper
 from multiprocessing import Process
 from src.supabase_utils import supabase
+import src.selenium_utils
 
 def get_colleges():
     colleges = supabase().table('college').select('college_en, etc_value').execute().data
@@ -21,7 +22,7 @@ def run_cafeteria_scraper():
     cafeteria_scraper.scrape_cafeteria_dish_data()
 
 def run_academic_calendar_scraper():
-    academic_calendar_scraper = Academic_Calendar_Scraper()
+    academic_calendar_scraper = AcademicCalendarScraper()
     academic_calendar_scraper.scrape_academic_calendar_data()
 
 if __name__ == '__main__':
