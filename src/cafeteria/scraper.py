@@ -4,8 +4,9 @@ from bs4 import BeautifulSoup
 import traceback
 from datetime import datetime, timedelta
 from src.supabase_utils import supabase
-from src.selenium_utils import service
+from src.selenium_utils import driver_path
 from selenium.webdriver.common.by import By
+from selenium.webdriver.chrome.service import Service as ChromeService
 
 class Cafeteria_Scraper:
     def __init__(self):
@@ -14,7 +15,8 @@ class Cafeteria_Scraper:
     def __enter__(self):
         options = Options()
         options.add_argument("headless")
-        global service
+        global driver_path
+        service = ChromeService()
         self.driver = webdriver.Chrome(service=service, options=options)
         return self
 
