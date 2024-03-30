@@ -3,6 +3,7 @@ from bs4 import BeautifulSoup
 import traceback
 from datetime import datetime, timedelta
 from src.selenium_utils import get_driver
+from selenium.webdriver.common.by import By
 
 class Cafeteria_Scraper:
     def scrape_cafeteria_dish_data(self):
@@ -30,10 +31,10 @@ class Cafeteria_Scraper:
             base_url += f'&schSysId={sch_sys_id}'
 
           try:
+            driver.get(base_url)
+            driver.implicitly_wait(3)
             # 이번 주와 다음 주의 식단 데이터를 가져옴
             for i in range(2):
-              driver.get(base_url)
-              driver.implicitly_wait(3)
               parsed_html = driver.page_source
               
               parsed_html = BeautifulSoup(parsed_html, 'html.parser')
@@ -94,7 +95,7 @@ class Cafeteria_Scraper:
                             else:
                               dish_category = '세트메뉴'
                           # 칠암 제2분관 식당의 경우, 메뉴가 '/'로 나뉘어져 있음
-                          elif cafeteria_name_ko == '칠암 제2분관 식당' and time == '아침':
+                          elif cafeteria_name_ko == '칠암제2분관식당' and time == '아침':
                             if dish.startswith('★'):
                               dish_category = dish[1:]
                               continue
@@ -112,6 +113,9 @@ class Cafeteria_Scraper:
                             elif dish == "(천원의 아침밥)":
                               dish_category = "천원의아침밥"
                               continue
+                          elif cafeteria_name_ko == '교육문화1층식당':
+                            if dish.startswith('('):
+                              continue
                           
                           # TODO: 식단 데이터 저장
                           dish_object = {
@@ -126,7 +130,8 @@ class Cafeteria_Scraper:
                           result.append(dish_object)
               # 다음 주로 넘어가기 위해 다음 주 버튼 클릭
               if i == 0:
-                driver.find_element_by_class_name('xi-angle-right').click()
+                driver.find_element(By.CLASS_NAME, "xi-angle-right").click()
+                driver.implicitly_wait(3)
             if len(result) > 0:
               # 식단 데이터 삽입
               self.insert_dishes(result)
