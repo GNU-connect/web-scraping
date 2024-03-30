@@ -1,5 +1,4 @@
 from src.supabase_utils import supabase
-import requests
 from bs4 import BeautifulSoup
 import traceback
 from datetime import datetime, timedelta
