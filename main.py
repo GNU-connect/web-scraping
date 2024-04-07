@@ -4,7 +4,10 @@ from src.cafeteria.scraper import Cafeteria_Scraper
 from src.academic_calendar.scraper import AcademicCalendarScraper
 from multiprocessing import Process
 from src.supabase_utils import supabase
-import src.selenium_utils
+from webdriver_manager.chrome import ChromeDriverManager
+
+# 셀레니움 드라이버 로드
+driver_path = ChromeDriverManager().install()
 
 def get_colleges():
     colleges = supabase().table('college').select('college_en, etc_value').execute().data
@@ -17,12 +20,12 @@ def run_notice_scraper(college):
     notice_scraper.scrape_notice_data()
 
 def run_cafeteria_scraper():
-    cafeteria_scraper = Cafeteria_Scraper()
+    cafeteria_scraper = Cafeteria_Scraper(driver_path)
     cafeteria_scraper.delete_oldest_dishes()
     cafeteria_scraper.scrape_cafeteria_dish_data()
 
 def run_academic_calendar_scraper():
-    academic_calendar_scraper = AcademicCalendarScraper()
+    academic_calendar_scraper = AcademicCalendarScraper(driver_path)
     academic_calendar_scraper.scrape_academic_calendar_data()
 
 if __name__ == '__main__':
@@ -35,12 +38,12 @@ if __name__ == '__main__':
         process = Process(target=run_notice_scraper, args=(college,))
         processes.append(process)
         process.start()
-    # 학식 데이터 스크래핑
-    process = Process(target=run_cafeteria_scraper)
-    processes.append(process)
-    process.start()
     # 학사일정 데이터 스크래핑
     process = Process(target=run_academic_calendar_scraper)
+    processes.append(process)
+    process.start()
+    # 학식 데이터 스크래핑
+    process = Process(target=run_cafeteria_scraper)
     processes.append(process)
     process.start()
     

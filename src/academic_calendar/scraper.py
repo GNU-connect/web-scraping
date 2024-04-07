@@ -4,19 +4,18 @@ from bs4 import BeautifulSoup
 import traceback
 from datetime import datetime, timedelta
 from src.supabase_utils import supabase
-from src.selenium_utils import driver_path
 from selenium.webdriver.chrome.service import Service as ChromeService
 
 class AcademicCalendarScraper:
-    def __init__(self):
+    def __init__(self, driver_path):
         self.base_url = 'https://www.gnu.ac.kr/main/ps/schdul/selectSchdulMainList.do?mi='
+        self.driver_path = driver_path
         self.driver = None
 
     def __enter__(self):
         options = Options()
         options.add_argument("headless")
-        global driver_path
-        service = ChromeService()
+        service = ChromeService(self.driver_path)
         self.driver = webdriver.Chrome(service=service, options=options)
         return self
 
@@ -66,6 +65,8 @@ class AcademicCalendarScraper:
                 self.delete_schedules()
                 self.insert_schedules(result)
                 print('[학사일정] 학사일정 데이터 교체 완료')
+                print(self.driver.get_log('driver'))
+                print(self.driver.get_log('browser'))
 
         except Exception as e:
             print(f'[학사일정] 학사일정 데이터 조회 실패: 학사일정 데이터를 가져오는데 실패했습니다.')
