@@ -65,8 +65,6 @@ class AcademicCalendarScraper:
                 self.delete_schedules()
                 self.insert_schedules(result)
                 print('[학사일정] 학사일정 데이터 교체 완료')
-                print(self.driver.get_log('driver'))
-                print(self.driver.get_log('browser'))
 
         except Exception as e:
             print(f'[학사일정] 학사일정 데이터 조회 실패: 학사일정 데이터를 가져오는데 실패했습니다.')
