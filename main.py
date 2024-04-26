@@ -6,6 +6,7 @@ from src.academic_calendar.scraper import AcademicCalendarScraper
 from src.supabase_utils import supabase
 from webdriver_manager.chrome import ChromeDriverManager
 from datetime import datetime, timedelta
+from src.slack_utils import Slack_Notifier
 
 # 셀레니움 드라이버 로드
 driver_path = ChromeDriverManager().install()
@@ -45,4 +46,5 @@ if __name__ == '__main__':
         academic_calendar = pool.apply_async(run_academic_calendar_scraper)
         academic_calendar.wait()  # 비동기 작업이 완료될 때까지 기다림
     
+    Slack_Notifier().success()
     print(f"모든 웹페이지의 정보 스크래핑이 완료되었습니다. 소요시간: {time.time() - start_time:.2f}초")
