@@ -26,7 +26,7 @@ jobs:
         uses: 8398a7/action-slack@v3
         with:
           status: ${{ job.status }}
-          author_name: Sloth Backend - dev
+          author_name: Connect-GNU Web Scraping
           fields: repo,commit,message,author # action,eventName,ref,workflow,job,took 추가할 수 있음
           mention: here
           if_mention: failure,cancelled
