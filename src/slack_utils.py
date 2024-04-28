@@ -29,7 +29,7 @@ class Slack_Notifier:
     def fail(self, error_message=None):
         # 실패 메시지 생성
         data = {
-            'text': 'Failed to scrape all web pages.'
+            'text': error_message
         }
         # Slack에 메시지 보내기
         response = requests.post(self.url, headers=self.headers, json=data)
