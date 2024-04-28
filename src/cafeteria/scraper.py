@@ -4,8 +4,8 @@ from bs4 import BeautifulSoup
 import traceback
 from datetime import datetime
 from src.supabase_utils import supabase
-from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.service import Service as ChromeService
+from src.slack_utils import Slack_Notifier
 
 class Cafeteria_Scraper:
     def __init__(self, driver_path, cafeteria):
@@ -153,8 +153,10 @@ class Cafeteria_Scraper:
               print(f'[교내 식당] {campus_id}번 캠퍼스 {cafeteria_name_ko}의 새로운 식단 데이터 {len(result)}개를 스크래핑했습니다.')
               
         except Exception as e:
-          print(f'[교내 식당] 교내 식당 데이터 조회 실패: {campus_id}번 캠퍼스의 {cafeteria_name_ko} 식단 데이터를 가져오는데 실패했습니다.')
+          print(f'[교내 식당] 교내 식당 데이터 조회 실패: {campus_id}번 캠퍼스의 {cafeteria_name_ko} 식단 데이터를 {e}의 사유로 가져오는데 실패했습니다.')
           print(f'[교내 식당] 해당 교내 식당 URL: {base_url}')
+          Slack_Notifier().fail(f'교내 식당 데이터 조회 실패: {campus_id}번 캠퍼스의 {cafeteria_name_ko} 식단 데이터를 {e}의 사유로 가져오는데 실패했습니다. \n \
+                                해당 교내 식당 URL: {base_url}')
           traceback.print_exc()
           return
     

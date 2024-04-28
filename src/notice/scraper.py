@@ -3,6 +3,7 @@ import requests
 from bs4 import BeautifulSoup
 import traceback
 from datetime import datetime
+from src.slack_utils import Slack_Notifier
 
 max_num_notices = 5 # 스크래핑 할 공지사항 개수 (변경 X)
 
@@ -89,6 +90,8 @@ class Notice_Scraper:
           except Exception as e:
             print(f'[공지사항] 공지사항 데이터 조회 실패: {department_ko}의 {category} 카테고리를 {e} 의 사유로 실패했습니다.')
             print(f'[공지사항] 해당 학과 공지사항 URL: {department_board_url}')
+            Slack_Notifier().fail(f'공지사항 데이터 조회 실패: {department_ko}의 {category} 카테고리를 {e} 의 사유로 실패했습니다. \n \
+                                  해당 학과 공지사항 URL: {department_board_url}')
             traceback.print_exc()
             continue
     

@@ -5,6 +5,7 @@ import traceback
 from datetime import datetime, timedelta
 from src.supabase_utils import supabase
 from selenium.webdriver.chrome.service import Service as ChromeService
+from src.slack_utils import Slack_Notifier
 
 class AcademicCalendarScraper:
     def __init__(self, driver_path):
@@ -67,8 +68,10 @@ class AcademicCalendarScraper:
                 print('[학사일정] 학사일정 데이터 교체 완료')
 
         except Exception as e:
-            print(f'[학사일정] 학사일정 데이터 조회 실패: 학사일정 데이터를 가져오는데 실패했습니다.')
+            print(f'[학사일정] 학사일정 데이터 조회 실패: 학사일정 데이터를 {e}의 사유로 가져오는데 실패했습니다.')
             print(f'[학사일정] 해당 학사일정 url: {self.base_url}')
+            Slack_Notifier().fail(f'학사일정 데이터 조회 실패: 학사일정 데이터를 {e}의 사유로 가져오는데 실패했습니다. \n \
+                                    해당 학사일정 url: {self.base_url}')
             traceback.print_exc()
 
     def insert_schedules(self, schedules):
