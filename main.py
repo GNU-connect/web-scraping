@@ -13,7 +13,7 @@ driver_path = ChromeDriverManager().install()
 
 def delete_oldest_dishes():
     now_date = datetime.now() - timedelta(days=1)
-    supabase().table('cafeteria-diet').delete().lt('date', now_date).execute()
+    supabase().table('cafeteria_diet').delete().lt('date', now_date).execute()
 
 def get_colleges():
     return [college['college_en'] for college in supabase().table('college').select('college_en, etc_value').execute().data if college['etc_value'] == False] + ['etc']

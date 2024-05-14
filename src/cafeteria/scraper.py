@@ -161,7 +161,7 @@ class Cafeteria_Scraper:
           return
     
     def insert_dishes(self, dishes):
-      supabase().table('cafeteria-diet').insert(dishes).execute()
+      supabase().table('cafeteria_diet').insert(dishes).execute()
     
     def update_cafeteria_last_date(self, cafeteria_id, last_date):
       supabase().table('cafeteria').update({'last_date': last_date}).eq('id', cafeteria_id).execute()
