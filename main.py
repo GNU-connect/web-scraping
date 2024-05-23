@@ -3,23 +3,22 @@ from multiprocessing import Pool
 from src.notice.scraper import Notice_Scraper
 from src.cafeteria.scraper import Cafeteria_Scraper
 from src.academic_calendar.scraper import AcademicCalendarScraper
-from src.supabase_utils import supabase
+from src.supabase_utils import get_supabase_client
 from webdriver_manager.chrome import ChromeDriverManager
 from datetime import datetime, timedelta
-from src.slack_utils import Slack_Notifier
 
 # 셀레니움 드라이버 로드
 driver_path = ChromeDriverManager().install()
 
 def delete_oldest_dishes():
     now_date = datetime.now() - timedelta(days=1)
-    supabase().table('cafeteria_diet').delete().lt('date', now_date).execute()
+    get_supabase_client().table('cafeteria_diet').delete().lt('date', now_date).execute()
 
 def get_colleges():
-    return [college['college_en'] for college in supabase().table('college').select('college_en, etc_value').execute().data if college['etc_value'] == False] + ['etc']
+    return [college['college_en'] for college in get_supabase_client().table('college').select('college_en, etc_value').execute().data if college['etc_value'] == False] + ['etc']
 
 def get_cafeterias():
-    return supabase().table('cafeteria').select('*').execute().data
+    return get_supabase_client().table('cafeteria').select('*').execute().data
 
 def run_notice_scraper(college):
     notice_scraper = Notice_Scraper(college)

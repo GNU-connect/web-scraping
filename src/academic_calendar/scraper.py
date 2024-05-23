@@ -3,7 +3,7 @@ from selenium.webdriver.chrome.options import Options
 from bs4 import BeautifulSoup
 import traceback
 from datetime import datetime, timedelta
-from src.supabase_utils import supabase
+from src.supabase_utils import get_supabase_client
 from selenium.webdriver.chrome.service import Service as ChromeService
 from src.slack_utils import Slack_Notifier
 
@@ -75,7 +75,7 @@ class AcademicCalendarScraper:
             traceback.print_exc()
 
     def insert_schedules(self, schedules):
-        supabase().table('academic_calendar').insert(schedules).execute()
+        get_supabase_client().table('academic_calendar').insert(schedules).execute()
 
     def delete_schedules(self):
-        supabase().table('academic_calendar').delete().neq('content', 0).execute()
+        get_supabase_client().table('academic_calendar').delete().neq('content', 0).execute()

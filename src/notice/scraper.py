@@ -1,4 +1,4 @@
-from src.supabase_utils import supabase
+from src.supabase_utils import get_supabase_client
 import requests
 from bs4 import BeautifulSoup
 import traceback
@@ -97,19 +97,19 @@ class Notice_Scraper:
     
     def get_category_data(self, college):
         try:
-          datas = supabase().table(f'{college}-category').select(f'*, department(department_en, department_ko)').execute().data
+          datas = get_supabase_client().table(f'{college}-category').select(f'*, department(department_en, department_ko)').execute().data
           return datas
         except Exception as e:
           return None
 
     def update_category_last_ntt_sn(self, category_id, last_ntt_sn):
-        supabase().table(f'{self.college}-category').update({'last_ntt_sn': int(last_ntt_sn)}).eq('id', category_id).execute()
+        get_supabase_client().table(f'{self.college}-category').update({'last_ntt_sn': int(last_ntt_sn)}).eq('id', category_id).execute()
 
     def get_existing_notices(self, category_id):
-        return supabase().from_(f'{self.college}-notice').select('id, ntt_sn').eq('category_id', category_id).order('ntt_sn', desc=False).execute().data
+        return get_supabase_client().from_(f'{self.college}-notice').select('id, ntt_sn').eq('category_id', category_id).order('ntt_sn', desc=False).execute().data
 
     def insert_notices(self, notices):
-        supabase().table(f'{self.college}-notice').insert(notices).execute()
+        get_supabase_client().table(f'{self.college}-notice').insert(notices).execute()
 
     def update_notice(self, notice, notice_id):
-        supabase().table(f'{self.college}-notice').update(notice).eq('id', notice_id).execute()
+        get_supabase_client().table(f'{self.college}-notice').update(notice).eq('id', notice_id).execute()
