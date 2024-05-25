@@ -3,9 +3,9 @@ from selenium.webdriver.chrome.options import Options
 from bs4 import BeautifulSoup
 import traceback
 from datetime import datetime
-from src.supabase_utils import get_supabase_client
+from src.utils.supabase import get_supabase_client
 from selenium.webdriver.chrome.service import Service as ChromeService
-from src.slack_utils import Slack_Notifier
+from src.utils.slack import Slack_Notifier
 
 class Cafeteria_Scraper:
     def __init__(self, driver_path, cafeteria):

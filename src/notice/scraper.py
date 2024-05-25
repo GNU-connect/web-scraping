@@ -1,9 +1,9 @@
-from src.supabase_utils import get_supabase_client
+from src.utils.supabase import get_supabase_client
 import requests
 from bs4 import BeautifulSoup
 import traceback
 from datetime import datetime
-from src.slack_utils import Slack_Notifier
+from src.utils.slack import Slack_Notifier
 
 max_num_notices = 5 # 스크래핑 할 공지사항 개수 (변경 X)
 

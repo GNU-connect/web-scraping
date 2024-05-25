@@ -1,9 +1,10 @@
+from src.utils import sentry
 import time
 from multiprocessing import Pool
 from src.notice.scraper import Notice_Scraper
 from src.cafeteria.scraper import Cafeteria_Scraper
 from src.academic_calendar.scraper import AcademicCalendarScraper
-from src.supabase_utils import get_supabase_client
+from src.utils.supabase import get_supabase_client
 from webdriver_manager.chrome import ChromeDriverManager
 from datetime import datetime, timedelta
 
