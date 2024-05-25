@@ -1,5 +1,4 @@
 from src.utils import sentry
-import time
 from multiprocessing import Pool
 from src.notice.scraper import Notice_Scraper
 from src.cafeteria.scraper import Cafeteria_Scraper
@@ -34,7 +33,6 @@ def run_academic_calendar_scraper():
     academic_calendar_scraper.scrape_academic_calendar_data()
 
 if __name__ == '__main__':
-    start_time = time.time()
     cafeterias = get_cafeterias()
     colleges = get_colleges()
 
@@ -45,5 +43,3 @@ if __name__ == '__main__':
         pool.map(run_cafeteria_scraper, cafeterias)
         academic_calendar = pool.apply_async(run_academic_calendar_scraper)
         academic_calendar.wait()  # 비동기 작업이 완료될 때까지 기다림
-
-    print(f"모든 웹페이지의 정보 스크래핑이 완료되었습니다. 소요시간: {time.time() - start_time:.2f}초")
