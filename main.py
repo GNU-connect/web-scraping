@@ -1,4 +1,5 @@
-from src.utils import sentry
+import sentry_sdk
+import os
 from multiprocessing import Pool
 from src.notice.scraper import Notice_Scraper
 from src.cafeteria.scraper import Cafeteria_Scraper
@@ -6,6 +7,11 @@ from src.academic_calendar.scraper import AcademicCalendarScraper
 from src.utils.supabase import get_supabase_client
 from webdriver_manager.chrome import ChromeDriverManager
 from datetime import datetime, timedelta
+
+sentry_sdk.init(
+    dsn=os.getenv("SENTRY_DSN"),
+    traces_sample_rate=1.0,
+)
 
 # 셀레니움 드라이버 로드
 driver_path = ChromeDriverManager().install()
