@@ -1,4 +1,5 @@
 import sentry_sdk
+from sentry_sdk.crons import monitor
 import os
 from multiprocessing import Pool
 from src.notice.scraper import Notice_Scraper
@@ -12,6 +13,10 @@ sentry_sdk.init(
     dsn=os.getenv("SENTRY_DSN"),
     traces_sample_rate=1.0,
 )
+
+@monitor(monitor_slug='python-web-scraper')
+def tell_the_world(msg):
+    print(msg)
 
 # 셀레니움 드라이버 로드
 driver_path = ChromeDriverManager().install()
