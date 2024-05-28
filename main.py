@@ -14,10 +14,6 @@ sentry_sdk.init(
     traces_sample_rate=1.0,
 )
 
-@monitor(monitor_slug='python-web-scraper')
-def tell_the_world(msg):
-    print(msg)
-
 # 셀레니움 드라이버 로드
 driver_path = ChromeDriverManager().install()
 
@@ -44,13 +40,14 @@ def run_academic_calendar_scraper():
     academic_calendar_scraper.scrape_academic_calendar_data()
 
 if __name__ == '__main__':
-    cafeterias = get_cafeterias()
-    colleges = get_colleges()
+    with monitor(monitor_slug='<monitor-slug>'):
+        cafeterias = get_cafeterias()
+        colleges = get_colleges()
 
-    # 공지사항 스크래핑 작업
-    delete_oldest_dishes()
-    with Pool() as pool:
-        pool.map(run_notice_scraper, colleges)
-        pool.map(run_cafeteria_scraper, cafeterias)
-        academic_calendar = pool.apply_async(run_academic_calendar_scraper)
-        academic_calendar.wait()  # 비동기 작업이 완료될 때까지 기다림
+        # 공지사항 스크래핑 작업
+        delete_oldest_dishes()
+        with Pool() as pool:
+            pool.map(run_notice_scraper, colleges)
+            pool.map(run_cafeteria_scraper, cafeterias)
+            academic_calendar = pool.apply_async(run_academic_calendar_scraper)
+            academic_calendar.wait()  # 비동기 작업이 완료될 때까지 기다림
