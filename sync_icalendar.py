@@ -62,10 +62,14 @@ def sync_icalendar():
       return get_supabase_client().table('academic_calendar').select('*').eq('calendar_type', calendar_type).execute().data
     
     def delete_all_events(service, calendar_id):
-        events = service.events().list(calendarId=calendar_id).execute()
-        if 'items' in events:
+        page_token = None
+        while True:
+            events = service.events().list(calendarId=calendar_id, pageToken=page_token).execute()
             for event in events['items']:
                 service.events().delete(calendarId=calendar_id, eventId=event['id']).execute()
+            page_token = events.get('nextPageToken')
+            if not page_token:
+                break
 
     try:
       service = authenticate_google_calendar()
