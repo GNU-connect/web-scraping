@@ -1,7 +1,6 @@
 import sentry_sdk
 from sentry_sdk.crons import monitor
 import os
-from multiprocessing import Pool
 from src.academic_calendar.update_icalendar import update_icalendar_from_db
 from src.notice.scraper import Notice_Scraper
 from src.cafeteria.scraper import Cafeteria_Scraper
@@ -9,6 +8,8 @@ from src.academic_calendar.scraper import AcademicCalendarScraper
 from src.utils.supabase import get_supabase_client
 from webdriver_manager.chrome import ChromeDriverManager
 from datetime import datetime, timedelta
+from dotenv import load_dotenv
+load_dotenv(verbose=True)
 
 sentry_sdk.init(
     dsn=os.getenv("SENTRY_DSN"),
