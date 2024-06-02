@@ -1,20 +1,13 @@
-name: Schedule Scraper
+name: Sync iCalendar
 on:
   workflow_dispatch:
-  schedule:
-    - cron: "0 0-9 * * *"
-permissions:
-  contents: read
-  pull-requests: write
-  actions: read
-  checks: write
-  issues: read
-  deployments: write
 env:
   SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
   SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
   SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
   SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
+  GOOGLE_CALENDAR_CLIENT_SECRET: ${{ secrets.GOOGLE_CALENDAR_CLIENT_SECRET }}
+  GOOGLE_CALENDAR_UNDERGRADUATE_ID: ${{ secrets.GOOGLE_CALENDAR_UNDERGRADUATE_ID }}
 jobs:
   crawl:
     runs-on: ubuntu-latest
@@ -30,7 +23,7 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
       - name: Run Scraper
-        run: python main.py # 크롤링을 실행하는 스크립트 파일의 이름
+        run: python sync_icalendar.py # 크롤링을 실행하는 스크립트 파일의 이름
       - name: action-slack
         uses: 8398a7/action-slack@v3
         with:

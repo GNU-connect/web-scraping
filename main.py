@@ -2,7 +2,6 @@ from multiprocessing import Pool
 import sentry_sdk
 from sentry_sdk.crons import monitor
 import os
-from src.academic_calendar.update_icalendar import update_icalendar_from_db
 from src.notice.scraper import Notice_Scraper
 from src.cafeteria.scraper import Cafeteria_Scraper
 from src.academic_calendar.scraper import AcademicCalendarScraper
