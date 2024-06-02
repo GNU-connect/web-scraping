@@ -8,6 +8,8 @@ env:
   SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
   SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
   SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
+  GOOGLE_CALENDAR_CLIENT_SECRET: ${{ secrets.GOOGLE_CALENDAR_CLIENT_SECRET }}
+  GOOGLE_CALENDAR_UNDERGRADUATE_ID: ${{ secrets.GOOGLE_CALENDAR_UNDERGRADUATE_ID }}
 jobs:
   crawl:
     runs-on: ubuntu-latest
