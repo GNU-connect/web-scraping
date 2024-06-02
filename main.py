@@ -44,16 +44,16 @@ def run_academic_calendar_scraper():
 
 @monitor(monitor_slug='python-web-scraper')
 def main():
-    # cafeterias = get_cafeterias()
-    # colleges = get_colleges()
+    cafeterias = get_cafeterias()
+    colleges = get_colleges()
 
-    # # 공지사항 스크래핑 작업
-    # delete_oldest_dishes()
-    # with Pool() as pool:
-    #     pool.map(run_notice_scraper, colleges)
-    #     pool.map(run_cafeteria_scraper, cafeterias)
-    #     academic_calendar = pool.apply_async(run_academic_calendar_scraper)
-    #     academic_calendar.wait()  # 비동기 작업이 완료될 때까지 기다림
+    # 공지사항 스크래핑 작업
+    delete_oldest_dishes()
+    with Pool() as pool:
+        pool.map(run_notice_scraper, colleges)
+        pool.map(run_cafeteria_scraper, cafeterias)
+        academic_calendar = pool.apply_async(run_academic_calendar_scraper)
+        academic_calendar.wait()  # 비동기 작업이 완료될 때까지 기다림
     update_icalendar_from_db()
 
 if __name__ == '__main__':

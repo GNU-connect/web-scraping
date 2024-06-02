@@ -76,9 +76,9 @@ def update_icalendar_from_db():
       undergraduate_data = get_academic_calendar_data(1)
       add_events_to_calendar(service, calendar_undergraduate_id, undergraduate_data)
 
-      print("[학사일정] 학사일정 데이터 교체 완료")
+      print("[i캘린더] i캘린더 동기화 완료")
     except Exception as e:
-      error_message = f'i캘린더 업데이트 실패: i캘린더를 {e}의 사유로 업데이트하지 못했습니다.'
+      error_message = f'i캘린더 동기화 실패: i캘린더를 {e}의 사유로 동기화하지 못했습니다.'
       print(error_message)
       Slack_Notifier().fail(error_message)
       traceback.print_exc()
