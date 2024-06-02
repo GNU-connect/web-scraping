@@ -41,9 +41,6 @@ def authenticate_google_calendar():
     return build('calendar', 'v3', credentials=creds)
 
 def update_icalendar_from_db():
-    def get_ical_url(calendar_id):
-      return f"https://calendar.google.com/calendar/ical/{calendar_id}/public/basic.ics"
-
     def add_events_to_calendar(service, calendar_id, data):
       seoul_tz = pytz.timezone('Asia/Seoul')
       for item in data:
