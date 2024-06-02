@@ -2,6 +2,7 @@ import sentry_sdk
 from sentry_sdk.crons import monitor
 import os
 from multiprocessing import Pool
+from src.academic_calendar.update_icalendar import update_icalendar_from_db
 from src.notice.scraper import Notice_Scraper
 from src.cafeteria.scraper import Cafeteria_Scraper
 from src.academic_calendar.scraper import AcademicCalendarScraper
@@ -41,16 +42,18 @@ def run_academic_calendar_scraper():
 
 @monitor(monitor_slug='python-web-scraper')
 def main():
-    cafeterias = get_cafeterias()
-    colleges = get_colleges()
+    # cafeterias = get_cafeterias()
+    # colleges = get_colleges()
 
-    # 공지사항 스크래핑 작업
-    delete_oldest_dishes()
-    with Pool() as pool:
-        pool.map(run_notice_scraper, colleges)
-        pool.map(run_cafeteria_scraper, cafeterias)
-        academic_calendar = pool.apply_async(run_academic_calendar_scraper)
-        academic_calendar.wait()  # 비동기 작업이 완료될 때까지 기다림
+    # # 공지사항 스크래핑 작업
+    # delete_oldest_dishes()
+    # with Pool() as pool:
+    #     pool.map(run_notice_scraper, colleges)
+    #     pool.map(run_cafeteria_scraper, cafeterias)
+        # academic_calendar = pool.apply_async(run_academic_calendar_scraper)
+        # academic_calendar.wait()  # 비동기 작업이 완료될 때까지 기다림
+    result = update_icalendar_from_db()
+    print(result)
 
 if __name__ == '__main__':
     main()
