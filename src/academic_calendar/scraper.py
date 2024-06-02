@@ -27,6 +27,15 @@ class AcademicCalendarScraper:
             self.driver.quit()
     
     def scrape_academic_calendar_data(self):
+        def check_duplicate(schedule_object, result):
+            for item in result:
+                if (item['calendar_type'] == schedule_object['calendar_type'] and
+                    item['start_date'] == schedule_object['start_date'] and
+                    item['end_date'] == schedule_object['end_date'] and
+                    item['content'] == schedule_object['content']):
+                    return True
+            return False
+        
         try:
             with self as scraper:
                 scraper.driver.get(self.base_url)
@@ -65,7 +74,8 @@ class AcademicCalendarScraper:
                             'end_date': end_date.isoformat(),
                             'content': content
                         }
-                        result.append(schedule_object)
+                        if not check_duplicate(schedule_object, result):
+                            result.append(schedule_object)
                     next_year_button = self.driver.find_element(By.XPATH, '//*[@id="listForm"]/div/div[1]/div[1]/a[3]/i')
                     next_year_button.click()
                     time.sleep(1)
