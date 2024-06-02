@@ -1,5 +1,6 @@
 import os
 import pickle
+import traceback
 import pytz
 import json
 from datetime import datetime
@@ -9,6 +10,7 @@ from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
 from src.utils.supabase import get_supabase_client
 from dotenv import load_dotenv
+from src.utils.slack import Slack_Notifier
 load_dotenv(verbose=True)
 
 SCOPES = ['https://www.googleapis.com/auth/calendar']
@@ -78,7 +80,10 @@ def update_icalendar_from_db():
       undergraduate_data = get_academic_calendar_data(1)
       add_events_to_calendar(service, calendar_undergraduate_id, undergraduate_data)
 
-      return get_ical_url(calendar_undergraduate_id)
+      print("[학사일정] 학사일정 데이터 교체 완료")
     except Exception as e:
-      print(f'Failed to update icalendar: {e}')
+      error_message = f'i캘린더 업데이트 실패: i캘린더를 {e}의 사유로 업데이트하지 못했습니다.'
+      print(error_message)
+      Slack_Notifier().fail(error_message)
+      traceback.print_exc()
       return None
