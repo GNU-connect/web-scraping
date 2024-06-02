@@ -67,14 +67,19 @@ def update_icalendar_from_db():
     
     def get_academic_calendar_data(calendar_type):
       return get_supabase_client().table('academic_calendar').select('*').eq('calendar_type', calendar_type).execute().data
+    
+    def delete_all_events(service, calendar_id):
+        events = service.events().list(calendarId=calendar_id).execute()
+        if 'items' in events:
+            for event in events['items']:
+                service.events().delete(calendarId=calendar_id, eventId=event['id']).execute()
 
     try:
       service = authenticate_google_calendar()
 
       # 경상대 학부생 학사일정
-      calendar_summary = '경상국립대학교 학부생 학사일정'
-      created_calendar = create_calendar(service, calendar_summary)
-      calendar_undergraduate_id = created_calendar['id']
+      calendar_undergraduate_id = os.getenv("GOOGLE_CALENDAR_UNDERGRADUATE_ID")
+      delete_all_events(service, calendar_undergraduate_id)
       undergraduate_data = get_academic_calendar_data(1)
       add_events_to_calendar(service, calendar_undergraduate_id, undergraduate_data)
 
