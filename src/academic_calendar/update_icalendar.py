@@ -8,6 +8,8 @@ from google_auth_oauthlib.flow import InstalledAppFlow
 from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
 from src.utils.supabase import get_supabase_client
+from dotenv import load_dotenv
+load_dotenv(verbose=True)
 
 SCOPES = ['https://www.googleapis.com/auth/calendar']
 
@@ -71,6 +73,7 @@ def update_icalendar_from_db():
 
       # 경상대 학부생 학사일정
       calendar_undergraduate_id = os.getenv("GOOGLE_CALENDAR_UNDERGRADUATE_ID")
+      print(f"Updating icalendar: {calendar_undergraduate_id}")
       delete_all_events(service, calendar_undergraduate_id)
       undergraduate_data = get_academic_calendar_data(1)
       add_events_to_calendar(service, calendar_undergraduate_id, undergraduate_data)
