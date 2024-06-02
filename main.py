@@ -54,7 +54,6 @@ def main():
         pool.map(run_cafeteria_scraper, cafeterias)
         academic_calendar = pool.apply_async(run_academic_calendar_scraper)
         academic_calendar.wait()  # 비동기 작업이 완료될 때까지 기다림
-    update_icalendar_from_db()
 
 if __name__ == '__main__':
     main()
