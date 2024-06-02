@@ -40,7 +40,7 @@ def authenticate_google_calendar():
     
     return build('calendar', 'v3', credentials=creds)
 
-def update_icalendar_from_db():
+def sync_icalendar():
     def add_events_to_calendar(service, calendar_id, data):
       seoul_tz = pytz.timezone('Asia/Seoul')
       for item in data:
@@ -83,3 +83,6 @@ def update_icalendar_from_db():
       Slack_Notifier().fail(error_message)
       traceback.print_exc()
       return None
+
+if __name__ == '__main__':
+    sync_icalendar()
