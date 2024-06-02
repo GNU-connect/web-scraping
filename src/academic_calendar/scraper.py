@@ -39,7 +39,7 @@ class AcademicCalendarScraper:
         try:
             with self as scraper:
                 scraper.driver.get(self.base_url)
-                scraper.driver.implicitly_wait(10)
+                time.sleep(1)
                 result = []
                 # 올해, 내년 학사일정 데이터를 가져오기 위해 2번 반복
                 for _ in range(2):
