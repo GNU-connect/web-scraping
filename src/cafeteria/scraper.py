@@ -70,7 +70,7 @@ class Cafeteria_Scraper:
               dish_type = dish_type = dish_type_list[t] if form_type == 2 else None
               dish_time_html = dish_time_htmls[t]
               # 점심 메뉴만 제공해주는 식당일 경우 (ex. 교직원 식당)
-              time = '점심' if cafeteria_name_ko == '교육문화1층식당' or form_type == 2 else time_list[t]
+              time = '점심' if cafeteria_name_ko == '교육문화식당' or form_type == 2 else time_list[t]
               dish_day_htmls = dish_time_html.find_all('td')
               # 열(요일) 단위로 식단 데이터 처리
               for d in range(len(day_list)):
@@ -98,7 +98,7 @@ class Cafeteria_Scraper:
                         if dish == ' ' or dish == '':
                           continue
                         # 중앙식당 점심과 저녁은 임의로 dish_category을 붙여줌
-                        if cafeteria_name_ko == '중앙1식당' and (time == '점심' or time == '저녁'):
+                        if cafeteria_name_ko == '중앙식당' and (time == '점심' or time == '저녁'):
                           if dish == '(세트메뉴)':
                             is_set_menu = True
                             continue
@@ -108,7 +108,7 @@ class Cafeteria_Scraper:
                           else:
                             dish_category = '세트메뉴'
                         # 칠암 제2분관 식당의 경우, 메뉴가 '/'로 나뉘어져 있음
-                        elif cafeteria_name_ko == '칠암제2분관식당' and time == '아침':
+                        elif cafeteria_name_ko == '홍지관' and time == '아침':
                           if dish.startswith('★'):
                             dish_category = dish[1:]
                             continue
@@ -126,7 +126,7 @@ class Cafeteria_Scraper:
                           elif dish == "(천원의 아침밥)":
                             dish_category = "천원의아침밥"
                             continue
-                        elif cafeteria_name_ko == '교육문화1층식당':
+                        elif cafeteria_name_ko == '교육문화식당':
                           if dish.startswith('('):
                             continue
                         
