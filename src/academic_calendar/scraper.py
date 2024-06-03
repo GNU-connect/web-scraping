@@ -39,7 +39,7 @@ class AcademicCalendarScraper:
         try:
             with self as scraper:
                 scraper.driver.get(self.base_url)
-                time.sleep(1)
+                time.sleep(2)
                 result = []
                 # 올해, 내년 학사일정 데이터를 가져오기 위해 2번 반복
                 for _ in range(2):
@@ -78,7 +78,7 @@ class AcademicCalendarScraper:
                             result.append(schedule_object)
                     next_year_button = self.driver.find_element(By.XPATH, '//*[@id="listForm"]/div/div[1]/div[1]/a[3]/i')
                     next_year_button.click()
-                    time.sleep(1)
+                    time.sleep(2)
 
                 self.delete_schedules()
                 self.insert_schedules(result)
