@@ -39,8 +39,8 @@ class ClickerScraper:
             self.driver.quit()
     
     def fetch_seat_info(self, data):
-        def save_screenshot_on_supabase(file_path):
-          supabase_client.storage.from_(bucket).update(path=file_path, file=file_path)
+        def save_screenshot_on_supabase(image_data, object_name):
+          supabase_client.storage.from_(bucket).update(file=image_data, path=object_name)
         data_id = data['id']
         base_url = data['url']
         name = data['name']
@@ -56,9 +56,9 @@ class ClickerScraper:
                 element = self.driver.find_element(By.ID, 'clicker_div_guide_map')
                 if element:
                     # 요소 스크린샷 찍기
-                    file_path = f'clicker/{data_id}.png'
-                    element.screenshot(file_path)
-                    save_screenshot_on_supabase(file_path)
+                    image_data = element.screenshot_as_png
+                    object_name = f'clicker/{data_id}.png'
+                    save_screenshot_on_supabase(image_data, object_name)
                 else:
                     print("ID가 'clicker_div_guide_map'인 요소를 찾을 수 없습니다.")
         except Exception as e:
