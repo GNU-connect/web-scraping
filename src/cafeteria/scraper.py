@@ -47,7 +47,6 @@ class Cafeteria_Scraper:
             scraper.driver.get(base_url)
             scraper.driver.implicitly_wait(10)
             # 이번 주와 다음 주의 식단 데이터를 가져옴
-            #for i in range(2):
             parsed_html = scraper.driver.page_source
             
             parsed_html = BeautifulSoup(parsed_html, 'html.parser')
@@ -65,9 +64,19 @@ class Cafeteria_Scraper:
             dish_time_htmls = tbody_element.find_all('tr')
 
             result = []
+
+            # 행 단위 탐색 개수 설정
+            repeat_number = 0
+            if form_type == 2:
+              repeat_number = len(dish_type_list)
+            elif len(dish_time_htmls) < len(time_list):
+              repeat_number = len(dish_time_htmls)
+            else:
+              repeat_number = len(time_list)
+
             # 행(시간) 단위로 식단 데이터 처리
-            for t in range(len(dish_time_htmls) if len(dish_time_htmls) < len(time_list) else len(time_list)):
-              dish_type = dish_type = dish_type_list[t] if form_type == 2 else None
+            for t in range(repeat_number):
+              dish_type = dish_type_list[t] if form_type == 2 else None
               dish_time_html = dish_time_htmls[t]
               # 점심 메뉴만 제공해주는 식당일 경우 (ex. 교직원 식당)
               time = '점심' if cafeteria_name_ko == '교육문화식당' or form_type == 2 else time_list[t]
@@ -141,10 +150,6 @@ class Cafeteria_Scraper:
                           'dish_name': dish
                         }
                         result.append(dish_object)
-              # 다음 주로 넘어가기 위해 다음 주 버튼 클릭
-              #if i == 0:
-              #  scraper.driver.find_element(By.CLASS_NAME, "xi-angle-right").click()
-              #  scraper.driver.implicitly_wait(10)
             if len(result) > 0:
               # 식단 데이터 삽입
               self.insert_dishes(result)
