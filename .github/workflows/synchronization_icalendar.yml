@@ -1,8 +1,6 @@
 name: Sync iCalendar
 on:
   workflow_dispatch:
-  schedule:
-    - cron: "0 23 * * *"
 permissions:
   contents: read
   pull-requests: write
