@@ -22,13 +22,13 @@ google-auth-httplib2==0.2.0
 google-auth-oauthlib==1.2.0
 google-generativeai==0.7.2
 googleapis-common-protos==1.63.0
-gotrue>=2.5.0
+gotrue==2.4.1
 grpcio==1.66.1
 grpcio-status==1.62.3
 h11==0.14.0
 httpcore==1.0.4
 httplib2==0.22.0
-httpx==0.27.2
+httpx==0.25.2
 idna==3.6
 jsonpatch==1.33
 jsonpointer==3.0.0
