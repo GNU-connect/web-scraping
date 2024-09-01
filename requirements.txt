@@ -8,13 +8,17 @@ cffi==1.16.0
 charset-normalizer==3.3.2
 deprecation==2.1.0
 exceptiongroup==1.2.0
+google-ai-generativelanguage==0.6.6
 google-api-core==2.19.0
 google-api-python-client==2.131.0
 google-auth==2.29.0
 google-auth-httplib2==0.2.0
 google-auth-oauthlib==1.2.0
+google-generativeai==0.7.2
 googleapis-common-protos==1.63.0
 gotrue==2.4.1
+grpcio==1.66.1
+grpcio-status==1.62.3
 h11==0.14.0
 httpcore==1.0.4
 httplib2==0.22.0
@@ -52,6 +56,7 @@ storage3==0.7.3
 StrEnum==0.4.15
 supabase==2.4.0
 supafunc==0.3.3
+tqdm==4.66.5
 trio==0.24.0
 trio-websocket==0.11.1
 typing_extensions==4.10.0

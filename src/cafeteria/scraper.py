@@ -83,7 +83,6 @@ class Cafeteria_Scraper:
               dish_day_htmls = dish_time_html.find_all('td')
               # 열(요일) 단위로 식단 데이터 처리
               for d in range(len(day_list)):
-                  dish_object = {}
                   dish_day_html = dish_day_htmls[d]
                   date = date_list[d]
                   if date.replace(tzinfo=last_date.tzinfo) <= last_date:
@@ -98,7 +97,7 @@ class Cafeteria_Scraper:
                       dish_category = category_header.text.strip()
                     # 메뉴 처리
                     dishes = category.find('p', class_='')
-                    if dishes is not None:
+                    if dishes is not None and dishes.get_text() != '':
                       dishes = dishes.get_text(separator='<br>').split('<br>')
                       is_set_menu = False  # 변수를 설정하여 (세트메뉴)가 발견되었는지 추적합니다.
                       tmp_dish = None # tmp 변수
@@ -139,7 +138,6 @@ class Cafeteria_Scraper:
                           if dish.startswith('('):
                             continue
                         
-                        # TODO: 식단 데이터 저장
                         dish_object = {
                           'cafeteria_id': cafeteria_id,
                           'date': date.isoformat(),
@@ -150,11 +148,21 @@ class Cafeteria_Scraper:
                           'dish_name': dish
                         }
                         result.append(dish_object)
+                      
+                  dish_objects = {
+                    'cafeteria_id': cafeteria_id,
+                    'date': date.isoformat(),
+                    'time': time,
+                    'category': categories,
+                    'dishes': dishes
+                  }
+                  print(dish_objects)
+
             if len(result) > 0:
               # 식단 데이터 삽입
-              self.insert_dishes(result)
+              # self.insert_dishes(result)
               # last_date 업데이트
-              self.update_cafeteria_last_date(cafeteria_id, result[-1]['date'])
+              # self.update_cafeteria_last_date(cafeteria_id, result[-1]['date'])
               print(f'[교내 식당] {campus_id}번 캠퍼스 {cafeteria_name_ko}의 새로운 식단 데이터 {len(result)}개를 스크래핑했습니다.')
               
         except Exception as e:
