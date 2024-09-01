@@ -148,21 +148,11 @@ class Cafeteria_Scraper:
                           'dish_name': dish
                         }
                         result.append(dish_object)
-                      
-                  dish_objects = {
-                    'cafeteria_id': cafeteria_id,
-                    'date': date.isoformat(),
-                    'time': time,
-                    'category': categories,
-                    'dishes': dishes
-                  }
-                  print(dish_objects)
-
             if len(result) > 0:
               # 식단 데이터 삽입
-              # self.insert_dishes(result)
+              self.insert_dishes(result)
               # last_date 업데이트
-              # self.update_cafeteria_last_date(cafeteria_id, result[-1]['date'])
+              self.update_cafeteria_last_date(cafeteria_id, result[-1]['date'])
               print(f'[교내 식당] {campus_id}번 캠퍼스 {cafeteria_name_ko}의 새로운 식단 데이터 {len(result)}개를 스크래핑했습니다.')
               
         except Exception as e:
