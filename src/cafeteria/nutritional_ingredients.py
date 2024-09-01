@@ -1,13 +1,11 @@
-import google.generativeai as genai
-import os
+from langchain_google_genai import ChatGoogleGenerativeAI
+from langchain_core.prompts import ChatPromptTemplate
+from langchain_core.output_parsers import StrOutputParser
+from datetime import datetime
+from src.utils.supabase import get_supabase_client
 from dotenv import load_dotenv
 
-from utils.supabase import get_supabase_client
 load_dotenv(verbose=True)
-
-GOOGLE_API_KEY=os.getenv("GOOGLE_API_KEY")
-genai.configure(api_key=GOOGLE_API_KEY)
-model = genai.GenerativeModel('gemini-pro')
 
 prompt = """
 당신은 경상국립대학교 각 카테고리 별 학식 메뉴의 영양 성분을 분석하는 프로그램입니다.
@@ -18,18 +16,64 @@ prompt = """
 2-2. 만약 카테고리가 여러 개 존재한다면 총 영양 성분은 따로 계산하세요.
 
 출력 포맷은 별도의 부가 설명과 마크다운을 사용하지 않고, 다음 형식을 따르세요:
+
+[카테고리1]
+
+1. 쌀밥
+칼로리: 300 kcal
+탄: 65 g
+단: 5 g
+지: 0.5 g
+
+[카테고리1 총 영양 성분]
+
+총 칼로리: 1580 kcal
+총 탄수화물: 225 g
+총 지방: 45.5 g
+총 단백질: 53.5 g
+
+⚠️ 주의: 이 정보는 AI 모델에 의해 생성된 결과값으로, 실제 학식 메뉴의 영양 성분과 다를 수 있어! ⚠️
+
+
+다음은 메뉴입니다:
+{input}
 """
 
-class NutritionalIngredients:
-  def __init__(self, cafeteria_id, day, time, dishes):
-    self.cafeteria_id = cafeteria_id
-    self.day = day
-    self.time = time
-    self.dishes = ""
-  
-  def get_nutritional_ingredients(self):
-    content = model.generate_content(prompt + self.dishes)
-    self.update_nutritional_ingredients(content)
-  
-  def update_nutritional_ingredients(self, content: str):
-    get_supabase_client().table('nutritional_ingredients').insert(content).execute()
+def get_nutritional_ingredients(cafeteria_id, date, time, dishes):
+  global prompt
+
+  llm = ChatGoogleGenerativeAI(model="gemini-1.5-pro-latest")
+  prompt = ChatPromptTemplate.from_template(prompt)
+  chain = prompt | llm | StrOutputParser()
+  content = chain.invoke({"input": dishes})
+  print(content)
+  insert_nutritional_ingredients(cafeteria_id, date, time, content)
+
+
+def insert_nutritional_ingredients(cafeteria_id, date, time, content: str):
+  get_supabase_client().table('cafeteria_nutritional_ingredients').upsert({
+    'cafeteria_id': int(cafeteria_id),
+    'date': date,
+    'time': time,
+    'content': content
+  }).execute()
+
+def isExistNutritionalIngredients(cafeteria_id, date, time):
+    # date가 문자열인 경우 datetime 객체로 변환
+    if isinstance(date, str):
+        date = datetime.fromisoformat(date)
+    
+    # date를 문자열 형식으로 변환 (예: '2024-09-02')
+    date_str = date.strftime('%Y-%m-%d')
+    
+    # Supabase 클라이언트 호출
+    response = get_supabase_client().table('cafeteria_nutritional_ingredients') \
+        .select('*') \
+        .eq('cafeteria_id', cafeteria_id) \
+        .eq('date', date_str) \
+        .eq('time', time) \
+        .execute()
+
+    # 데이터를 찾았는지 여부 반환
+    return len(response.data) > 0
+    

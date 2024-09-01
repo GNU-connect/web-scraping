@@ -90,11 +90,13 @@ class Cafeteria_Scraper:
                   day = day_list[d]
                   dish_category = None
                   categories = dish_day_html.find_all('div')
+                  dishes_str = ''
                   for category in categories:
                     # 카테고리 헤더 처리
                     category_header = category.find('p', class_='mgt15')
                     if category_header is not None:
                       dish_category = category_header.text.strip()
+                      dishes_str += f"{[dish_category]}\n"
                     # 메뉴 처리
                     dishes = category.find('p', class_='')
                     if dishes is not None and dishes.get_text() != '':
@@ -138,6 +140,8 @@ class Cafeteria_Scraper:
                           if dish.startswith('('):
                             continue
                         
+                        dishes_str += f"{dish}\n"
+                        
                         dish_object = {
                           'cafeteria_id': cafeteria_id,
                           'date': date.isoformat(),
@@ -148,6 +152,8 @@ class Cafeteria_Scraper:
                           'dish_name': dish
                         }
                         result.append(dish_object)
+                  # if dishes_str != '':
+                  #   get_nutritional_ingredients(cafeteria_id, date.isoformat(), time, dishes_str)
             if len(result) > 0:
               # 식단 데이터 삽입
               self.insert_dishes(result)
