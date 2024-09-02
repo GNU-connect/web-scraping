@@ -1,8 +1,8 @@
+from nutritional_ingredients import *
+
 from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.output_parsers import StrOutputParser
-from datetime import datetime
-from src.utils.supabase import get_supabase_client
 from dotenv import load_dotenv
 
 load_dotenv(verbose=True)
@@ -58,22 +58,37 @@ def insert_nutritional_ingredients(cafeteria_id, date, time, content: str):
     'content': content
   }).execute()
 
-def isExistNutritionalIngredients(cafeteria_id, date, time):
-    # date가 문자열인 경우 datetime 객체로 변환
-    if isinstance(date, str):
-        date = datetime.fromisoformat(date)
-    
-    # date를 문자열 형식으로 변환 (예: '2024-09-02')
-    date_str = date.strftime('%Y-%m-%d')
-    
-    # Supabase 클라이언트 호출
-    response = get_supabase_client().table('cafeteria_nutritional_ingredients') \
-        .select('*') \
-        .eq('cafeteria_id', cafeteria_id) \
-        .eq('date', date_str) \
-        .eq('time', time) \
-        .execute()
+def find_all_cafeteria_diet():
+  query = """
+    SELECT
+    date,
+    time,
+    cafeteria_id,
+    STRING_AGG(
+      COALESCE('[' || dish_category || ']', '') || ' ' || COALESCE(dishes, ''),
+      E'\n'
+    ) AS formatted_output
+  FROM (
+    SELECT
+      date,
+      time,
+      cafeteria_id,
+      dish_category,
+      STRING_AGG(dish_name, ', ') AS dishes
+    FROM
+      cafeteria_diet
+    GROUP BY
+      date, time, cafeteria_id, dish_category
+  ) sub
+  GROUP BY
+    date, time, cafeteria_id
+  ORDER BY
+    date, time, cafeteria_id;
+  """
 
-    # 데이터를 찾았는지 여부 반환
-    return len(response.data) > 0
-    
+
+def main():
+  find_all_cafeteria_diet()
+  
+if __name__ == '__main__':
+  main()
