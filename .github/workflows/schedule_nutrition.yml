@@ -14,6 +14,8 @@ env:
   SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
   SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
   GOOGLE_API_KEY: ${{ secrets.GOOGLE_API_KEY }}
+  SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+
 jobs:
   crawl:
     runs-on: ubuntu-latest

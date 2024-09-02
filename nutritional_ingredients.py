@@ -3,8 +3,12 @@ from nutritional_ingredients import *
 from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.output_parsers import StrOutputParser
+from google.api_core.exceptions import ResourceExhausted
 from src.utils.supabase import get_supabase_client
+import traceback
+import sys
 from dotenv import load_dotenv
+from src.utils.slack import Slack_Notifier
 
 load_dotenv(verbose=True)
 
@@ -47,9 +51,18 @@ class CafeteriaDietAnalyzer:
 
     def get_nutritional_ingredients(self, cafeteria_id, date, time, dishes):
         """Fetch nutritional information for the provided dishes using AI model."""
-        content = self.chain.invoke({"input": dishes})
-        print(content)
-        self.insert_nutritional_ingredients(cafeteria_id, date, time, content)
+        try:
+            content = self.chain.invoke({"input": dishes})
+            self.insert_nutritional_ingredients(cafeteria_id, date, time, content)
+        except ResourceExhausted as e:
+            print("Resource exhausted. Please try again later.")
+            sys.exit(0)
+        except Exception as e:
+            error_message = f'영양 성분을 가져오는데 실패했습니다: {e}'
+            print(error_message)
+            Slack_Notifier().fail(error_message)
+            traceback.print_exc()
+            
 
     def insert_nutritional_ingredients(self, cafeteria_id, date, time, content):
         """Insert the calculated nutritional information into the Supabase table."""
