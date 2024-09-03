@@ -23,6 +23,10 @@ def delete_oldest_dishes():
     now_date = datetime.now() - timedelta(days=1)
     get_supabase_client().table('cafeteria_diet').delete().lt('date', now_date).execute()
 
+def delete_oldest_dish_nutritional_ingredients():
+    now_date = datetime.now() - timedelta(days=1)
+    get_supabase_client().table('cafeteria_nutritional_ingredients').delete().lt('date', now_date).execute()
+
 def get_colleges():
     return [college['college_en'] for college in get_supabase_client().table('college').select('college_en, etc_value').execute().data if college['etc_value'] == False] + ['etc']
 
@@ -48,6 +52,7 @@ def main():
 
     # 공지사항 스크래핑 작업
     delete_oldest_dishes()
+    delete_oldest_dish_nutritional_ingredients()
     with Pool() as pool:
         pool.map(run_notice_scraper, colleges)
         pool.map(run_cafeteria_scraper, cafeterias)
