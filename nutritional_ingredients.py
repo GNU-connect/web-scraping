@@ -36,8 +36,8 @@ class CafeteriaDietAnalyzer:
 
         총 칼로리: 1580 kcal
         총 탄수화물: 225 g
-        총 지방: 45.5 g
         총 단백질: 53.5 g
+        총 지방: 45.5 g
 
         다음은 메뉴입니다:
         {input}
