@@ -2,7 +2,7 @@ name: Schedule Nutritional Ingredients
 on:
   workflow_dispatch:
   schedule:
-    - cron: "*/5 0-23 * * *"
+    - cron: "*/30 0-23 * * *"
 permissions:
   contents: read
   pull-requests: write
