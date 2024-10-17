@@ -4,6 +4,7 @@ from sentry_sdk.crons import monitor
 import os
 from src.notice.scraper import Notice_Scraper
 from src.cafeteria.scraper import Cafeteria_Scraper
+from src.news.scraper import News_Scraper
 from src.academic_calendar.scraper import AcademicCalendarScraper
 from src.utils.supabase import get_supabase_client
 from webdriver_manager.chrome import ChromeDriverManager
@@ -33,6 +34,10 @@ def get_colleges():
 def get_cafeterias():
     return get_supabase_client().table('cafeteria').select('*').execute().data
 
+def run_news_scraper():
+    news_scraper = News_Scraper()
+    news_scraper.scrape_news_data()
+
 def run_notice_scraper(college):
     notice_scraper = Notice_Scraper(college)
     notice_scraper.scrape_notice_data()
@@ -53,6 +58,8 @@ def main():
     # 공지사항 스크래핑 작업
     delete_oldest_dishes()
     delete_oldest_dish_nutritional_ingredients()
+
+    run_news_scraper()
     with Pool() as pool:
         pool.map(run_notice_scraper, colleges)
         pool.map(run_cafeteria_scraper, cafeterias)
