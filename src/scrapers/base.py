@@ -27,7 +27,7 @@ class BaseScraper(ABC):
         error_message = f'{context_message}: {str(error)}'
         print(f'[{self.get_scraper_name()}] {error_message}')
         print(f'[{self.get_scraper_name()}] URL: {self.base_url}')
-        send_slack_notification().fail(f'{error_message}\nURL: {self.base_url}')
+        #send_slack_notification().fail(f'{error_message}\nURL: {self.base_url}')
         traceback.print_exc()
     
     @abstractmethod

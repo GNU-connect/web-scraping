@@ -1,8 +1,9 @@
 from .base import BaseScraper
 import time
-import bs4 as BeautifulSoup
+from bs4 import BeautifulSoup
 from datetime import datetime, timedelta
 from selenium.webdriver.common.by import By
+from ..utils.database import get_supabase_client
 
 class AcademicCalendarScraper(BaseScraper):
     def __init__(self, driver_path):
