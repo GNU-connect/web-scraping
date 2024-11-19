@@ -1,10 +1,10 @@
-from .base import BaseScraper
+from .base import SeleniumScraper
 from .academic_calendar import AcademicCalendarScraper
-# from .cafeteria import CafeteriaScraper
+from .cafeteria import CafeteriaScraper
 # from .notice import NoticeScraper
 
 __all__ = [
-    "BaseScraper",
+    "SeleniumScraper",
     "AcademicCalendarScraper",
     "CafeteriaScraper",
     "NoticeScraper",

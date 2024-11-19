@@ -1,15 +1,14 @@
-from .base import BaseScraper
+from .base import SeleniumScraper
 import time
 from bs4 import BeautifulSoup
 from datetime import datetime, timedelta
 from selenium.webdriver.common.by import By
+from ..config.settings import ACADEMIC_CALENDAR_URL
 from ..utils.database import get_supabase_client
 
-class AcademicCalendarScraper(BaseScraper):
-    def __init__(self, driver_path):
-        super().__init__()
-        self.driver_path = driver_path
-        self.base_url = 'https://www.gnu.ac.kr/main/ps/schdul/selectSchdulMainList.do?mi='
+class AcademicCalendarScraper(SeleniumScraper):
+    def __init__(self):
+        super().__init__(base_url=ACADEMIC_CALENDAR_URL)
 
     def get_scraper_name(self):
         return "학사일정"
