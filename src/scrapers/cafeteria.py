@@ -3,6 +3,7 @@ from bs4 import BeautifulSoup
 from ..models.cafeteria import Cafeteria, CafeteriaDish
 from typing import List, Any, Optional
 from datetime import datetime
+from ..data_access.cafeteria_repository import save_dishes
 
 class CafeteriaScraper(SeleniumScraper):
     DISH_TYPE_LIST = ['주식', '국류', '찬류', '후식']
@@ -145,10 +146,11 @@ class CafeteriaScraper(SeleniumScraper):
                 parsed_html = BeautifulSoup(scraper.driver.page_source, 'html.parser')
                 dishes = self._parse_menu_data(parsed_html)
                 
-                print(dishes)
+                if dishes:
+                    save_dishes(dishes, self.cafeteria.id)
+                    print(f'[교내 식당] {self.cafeteria.campus_id}번 캠퍼스 {self.cafeteria.cafeteria_name_ko}의 '
+                          f'새로운 식단 데이터 {len(dishes)}개를 스크래핑했습니다.')
         
         except Exception as e:
             context_message = f"{self.cafeteria.campus_id}번 캠퍼스 {self.cafeteria.cafeteria_name_ko} 식단 데이터 조회 실패"
             self.notify_failure(e, context_message)
-    
-    

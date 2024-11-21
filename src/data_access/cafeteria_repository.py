@@ -1,6 +1,7 @@
-from ..models.cafeteria import Cafeteria
+from ..models.cafeteria import Cafeteria, CafeteriaDish
 from ..utils.database import get_supabase_client
 from datetime import datetime
+from typing import List
 
 def get_cafeterias() -> list[Cafeteria]:
     try:
@@ -32,3 +33,15 @@ def get_cafeterias() -> list[Cafeteria]:
     except Exception as e:
         print(f"Error fetching cafeterias: {e}")
         return []
+
+def save_dishes(dishes: List[CafeteriaDish], cafeteria_id: int) -> None:
+        """메뉴 데이터 저장"""
+        dish_dicts = [dish.__dict__ for dish in dishes]
+        get_supabase_client().table('cafeteria_diet_2').insert(dish_dicts).execute()
+        update_last_date(cafeteria_id, dishes[-1].date)
+
+def update_last_date(cafeteria_id: int, last_date: str) -> None:
+    """마지막 날짜 업데이트"""
+    get_supabase_client().table('cafeteria').update({
+        'last_date': last_date
+    }).eq('id', cafeteria_id).execute()
