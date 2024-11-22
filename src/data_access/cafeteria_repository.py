@@ -31,13 +31,12 @@ def get_cafeterias() -> list[Cafeteria]:
 
         return cafeterias
     except Exception as e:
-        print(f"Error fetching cafeterias: {e}")
         return []
 
 def save_dishes(dishes: List[CafeteriaDish], cafeteria_id: int) -> None:
         """메뉴 데이터 저장"""
         dish_dicts = [dish.__dict__ for dish in dishes]
-        get_supabase_client().table('cafeteria_diet_2').insert(dish_dicts).execute()
+        get_supabase_client().table('cafeteria_diet').insert(dish_dicts).execute()
         update_last_date(cafeteria_id, dishes[-1].date)
 
 def update_last_date(cafeteria_id: int, last_date: str) -> None:

@@ -49,29 +49,7 @@ class CafeteriaScraper(SeleniumScraper):
         return self.TIME_LIST[index]
     
     def _process_special_cases(self, dish: str, dish_category: Optional[str], time: str) -> tuple[Optional[str], Optional[str]]:
-        """특수 케이스 처리"""
-        if self.cafeteria.cafeteria_name_ko == '중앙식당' and time in ['점심', '저녁']:
-            if dish == '(세트메뉴)':
-                return None, '세트메뉴'
-            if not dish_category:
-                return dish, ['뚝빼기/비빔밥', '양식'][0]  # 인덱스는 상황에 따라 조정 필요
-        
-        elif self.cafeteria.cafeteria_name_ko == '홍지관' and time == '아침':
-            if dish.startswith('★'):
-                return None, dish[1:]
-            
-        elif (self.cafeteria.cafeteria_name_ko == '학생식당' and 
-              time == '아침' and 
-              self.cafeteria.campus_id == 2):
-            if "천원의 아침밥 사업 시행에 따라" in dish:
-                return None, None
-            if dish == "(천원의 아침밥)":
-                return None, "천원의아침밥"
-            
-        elif (self.cafeteria.cafeteria_name_ko == '교육문화식당' and 
-              dish.startswith('(')):
-            return None, dish_category
-            
+        """특수한 경우 처리"""
         return dish, dish_category
     
     def _process_day_slot(self, dish_day_html: Any, date: datetime, day: str, 
@@ -126,8 +104,8 @@ class CafeteriaScraper(SeleniumScraper):
                 continue
                 
             date = date_list[day_index]
-            # if date.replace(tzinfo=self.cafeteria.last_date.tzinfo) <= self.cafeteria.last_date:
-            #     continue
+            if date.replace(tzinfo=self.cafeteria.last_date.tzinfo) <= self.cafeteria.last_date:
+                continue
                 
             new_dishes = self._process_day_slot(dish_day_htmls[day_index], date, day, time, dish_type)
             dishes.extend(new_dishes)

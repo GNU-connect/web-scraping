@@ -4,6 +4,8 @@ from selenium.webdriver.chrome.service import Service as ChromeService
 from selenium.webdriver.chrome.options import Options
 import traceback
 from ..config.settings import CHROME_DRIVER_PATH
+import requests
+from bs4 import BeautifulSoup
 from ..utils.notifications import send_slack_notification
 
 class BaseScraper(ABC):
@@ -45,4 +47,21 @@ class SeleniumScraper(BaseScraper):
     def __exit__(self, exc_type, exc_value, traceback):
         if self.driver:
             self.driver.quit()
-    
+
+class RequestScraper(BaseScraper):
+    def __init__(self, base_url: str):
+        super().__init__()
+        self.base_url = base_url
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, exc_type, exc_value, traceback):
+        pass
+
+    def parsed_html(self, url: str) -> BeautifulSoup:
+        try:
+            request = requests.get(url)
+            return BeautifulSoup(request.text, 'html.parser')
+        except Exception as e:
+            ValueError(f'HTML 파싱 실패: {str(e)}')

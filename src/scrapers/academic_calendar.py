@@ -4,7 +4,9 @@ from bs4 import BeautifulSoup
 from datetime import datetime, timedelta
 from selenium.webdriver.common.by import By
 from ..config.settings import ACADEMIC_CALENDAR_URL
-from ..utils.database import get_supabase_client
+from typing import List
+from ..models.academic_calendar import AcademicCalendar
+from ..data_access.academic_calendar_repository import insert_schedules, delete_schedules
 
 class AcademicCalendarScraper(SeleniumScraper):
     def __init__(self):
@@ -27,14 +29,14 @@ class AcademicCalendarScraper(SeleniumScraper):
             with self as scraper:
                 scraper.driver.get(self.base_url)
                 time.sleep(2)
-                result = []
+                result: List[AcademicCalendar] = []
                 
                 for _ in range(2):  # 올해, 내년 학사일정
                     self._process_current_page(result)
                     self._click_next_year()
                 
-                self.delete_schedules()
-                self.insert_schedules(result)
+                delete_schedules()
+                insert_schedules(result)
                 print('[학사일정] 학사일정 데이터 교체 완료')
 
         except Exception as e:
@@ -80,9 +82,3 @@ class AcademicCalendarScraper(SeleniumScraper):
         )
         next_year_button.click()
         time.sleep(2)
-
-    def insert_schedules(self, schedules):
-        get_supabase_client().table('academic_calendar').insert(schedules).execute()
-
-    def delete_schedules(self):
-        get_supabase_client().table('academic_calendar').delete().neq('content', 0).execute()
