@@ -29,4 +29,4 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements_clicker.txt
       - name: Run Scraper
-        run: python clicker.py # 크롤링을 실행하는 스크립트 파일의 이름
+        run: python -m src.clicker # 크롤링을 실행하는 스크립트 파일의 이름
