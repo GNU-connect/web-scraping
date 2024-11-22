@@ -6,7 +6,7 @@ import traceback
 from ..config.settings import CHROME_DRIVER_PATH
 import requests
 from bs4 import BeautifulSoup
-from ..utils.notifications import send_slack_notification
+from ..utils.notifications import Slack_Notifier
 
 class BaseScraper(ABC):
     def __init__(self):
@@ -17,7 +17,7 @@ class BaseScraper(ABC):
         error_message = f'{context_message}: {str(error)}'
         print(f'[{self.get_scraper_name()}] {error_message}')
         print(f'[{self.get_scraper_name()}] URL: {self.base_url}')
-        #send_slack_notification().fail(f'{error_message}\nURL: {self.base_url}')
+        Slack_Notifier().fail(f'{error_message}\nURL: {self.base_url}')
         traceback.print_exc()
     
     @abstractmethod
