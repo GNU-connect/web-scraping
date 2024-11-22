@@ -2,9 +2,9 @@ from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.service import Service as ChromeService
 from selenium import webdriver
+from .utils.notifications import Slack_Notifier
 from webdriver_manager.chrome import ChromeDriverManager
 import time
-from src.utils.slack import Slack_Notifier
 import traceback
 import os
 from dotenv import load_dotenv
@@ -63,7 +63,6 @@ class ClickerScraper:
                     print("ID가 'clicker_div_guide_map'인 요소를 찾을 수 없습니다.")
         except Exception as e:
             error_message = f'클리커 좌석 정보 스크래핑 실패: {e}의 사유로 좌석 정보를 스크래핑하지 못했습니다.'
-            print(error_message)
             Slack_Notifier().fail(error_message)
             traceback.print_exc()
 
