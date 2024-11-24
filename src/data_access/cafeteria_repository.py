@@ -44,3 +44,11 @@ def update_last_date(cafeteria_id: int, last_date: str) -> None:
     get_supabase_client().table('cafeteria').update({
         'last_date': last_date
     }).eq('id', cafeteria_id).execute()
+
+def delete_dishes_by_date_range(cafeteria_id: int, start_date: datetime, end_date: datetime) -> None:
+    """기간에 해당하는 데이터 삭제"""
+    get_supabase_client().table('cafeteria_diet').delete().eq('cafeteria_id', cafeteria_id).gte('date', start_date).lte('date', end_date).execute()
+
+def delete_past_dishes(cafeteria_id: int, date: datetime) -> None:
+    """과거 데이터 삭제"""
+    get_supabase_client().table('cafeteria_diet').delete().eq('cafeteria_id', cafeteria_id).lt('date', date).execute()
