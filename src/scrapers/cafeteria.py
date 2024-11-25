@@ -30,10 +30,8 @@ class CafeteriaScraper(SeleniumScraper):
         dish_headers = thead_element.find_all('th')[1:]
         date_list = [datetime.strptime(header.text.strip().split(' ')[1], '%Y-%m-%d') 
                     for header in dish_headers]
-        tomorrow = get_midnight(datetime.now()) + timedelta(days=1)
-        start_date = max(min(date_list), get_midnight(tomorrow))
+        start_date = min(date_list)
         end_date = max(date_list)
-        filtered_date_list = [date for date in date_list if start_date <= date <= end_date]
         
         dish_time_htmls = tbody_element.find_all('tr')
         result = []
@@ -42,7 +40,7 @@ class CafeteriaScraper(SeleniumScraper):
                         else min(len(dish_time_htmls), len(self.TIME_LIST)))
 
         for t in range(repeat_number):
-            dishes = self._process_time_slot(t, filtered_date_list, dish_time_htmls)
+            dishes = self._process_time_slot(t, date_list, dish_time_htmls)
             result.extend(dishes)
             
         return (start_date, end_date, result)
