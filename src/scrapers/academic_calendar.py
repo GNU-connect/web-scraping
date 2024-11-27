@@ -1,5 +1,4 @@
 from .base import SeleniumScraper
-import time
 from bs4 import BeautifulSoup
 from datetime import datetime, timedelta
 from selenium.webdriver.common.by import By
@@ -7,6 +6,8 @@ from ..config.settings import ACADEMIC_CALENDAR_URL
 from typing import List
 from ..models.academic_calendar import AcademicCalendar
 from ..data_access.academic_calendar_repository import insert_schedules, delete_schedules
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
 
 class AcademicCalendarScraper(SeleniumScraper):
     def __init__(self):
@@ -28,13 +29,14 @@ class AcademicCalendarScraper(SeleniumScraper):
         try:
             with self as scraper:
                 scraper.driver.get(self.base_url)
-                scraper.driver.implicitly_wait(10)
                 result: List[AcademicCalendar] = []
                 
                 for _ in range(2):  # 올해, 내년 학사일정
+                    WebDriverWait(scraper.driver, 10).until(
+                        EC.presence_of_element_located((By.ID, "schdul3"))
+                    )
                     self._process_current_page(result)
                     self._click_next_year()
-                    scraper.driver.implicitly_wait(10)
                 
                 delete_schedules()
                 insert_schedules(result)
