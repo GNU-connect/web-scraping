@@ -28,12 +28,13 @@ class AcademicCalendarScraper(SeleniumScraper):
         try:
             with self as scraper:
                 scraper.driver.get(self.base_url)
-                time.sleep(2)
+                scraper.driver.implicitly_wait(10)
                 result: List[AcademicCalendar] = []
                 
                 for _ in range(2):  # 올해, 내년 학사일정
                     self._process_current_page(result)
                     self._click_next_year()
+                    scraper.driver.implicitly_wait(10)
                 
                 delete_schedules()
                 insert_schedules(result)
@@ -81,4 +82,3 @@ class AcademicCalendarScraper(SeleniumScraper):
             By.XPATH, '//*[@id="listForm"]/div/div[1]/div[1]/a[3]/i'
         )
         next_year_button.click()
-        time.sleep(2)
