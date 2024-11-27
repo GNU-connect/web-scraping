@@ -33,7 +33,7 @@ class AcademicCalendarScraper(SeleniumScraper):
                 
                 for _ in range(2):  # 올해, 내년 학사일정
                     WebDriverWait(scraper.driver, 10).until(
-                        EC.presence_of_element_located((By.ID, "schdul3"))
+                        EC.presence_of_element_located((By.XPATH, '//*[@id="schdul3"]/div/table/tbody'))
                     )
                     self._process_current_page(result)
                     self._click_next_year()
