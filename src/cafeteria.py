@@ -9,7 +9,6 @@ def scrape_cafeteria_data(cafeteria):
     """새로운 식당 데이터를 스크래핑하는 함수"""
     cafeteria_scraper = CafeteriaScraper(cafeteria)
     cafeteria_scraper.scrape_data()
-    cafeteria_scraper.delete_past_data()
 
 def main():
     cafeterias = get_cafeterias()
