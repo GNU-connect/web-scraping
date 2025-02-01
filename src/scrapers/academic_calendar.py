@@ -64,14 +64,15 @@ class AcademicCalendarScraper(SeleniumScraper):
             return None
 
         contents = a_element.get_text()
-        category_idx = contents.find('-')
-        category = contents[1:category_idx]
-        content_idx = contents.find(']')
-        
-        if content_idx == -1:
-            return None
+        category_start_idx = contents.find('[')
+        category_end_idx = contents.find(']')
 
-        content = contents[content_idx + 1:].strip()
+        if category_start_idx == -1 or category_end_idx == -1:
+            return None 
+
+        category = contents[category_start_idx + 1:category_end_idx].strip()
+        content = contents[category_end_idx + 1:].strip()
+
         return {
             'calendar_type': 1 if category == '학부' else 2,
             'start_date': start_date.isoformat(),
