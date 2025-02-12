@@ -71,7 +71,7 @@ if __name__ == '__main__':
              "name": "새 둥지 1열람실(2층)",
              "url": "https://clicker.gnu.ac.kr/Clicker/UserSeat/20230321132944292?DeviceName=normal",
              "size_x": "1920",
-              "size_y": "700",
+              "size_y": "800",
               },
              {
               "id": 2,
