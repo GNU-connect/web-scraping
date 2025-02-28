@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 from datetime import datetime
 
+
 @dataclass
 class NoticeCategory:
     id: int
@@ -12,9 +13,9 @@ class NoticeCategory:
     department_en: str
     department_ko: str
 
+
 @dataclass
 class Notice:
-    department_id: int
     category_id: int
     title: str
     ntt_sn: int
