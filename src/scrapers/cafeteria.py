@@ -37,8 +37,12 @@ class CafeteriaScraper(RequestScraper):
         dish_time_htmls = tbody_element.find_all('tr')
         result = []
 
-        repeat_number = (len(self.DISH_TYPE_LIST) if self.cafeteria.form_type == 2
-                         else min(len(dish_time_htmls), len(self.TIME_LIST)))
+        max_slots = (
+            len(self.DISH_TYPE_LIST)
+            if self.cafeteria.form_type == 2
+            else len(self.TIME_LIST)
+        )
+        repeat_number = min(len(dish_time_htmls), max_slots)
 
         for t in range(repeat_number):
             dishes = self._process_time_slot(t, dish_time_htmls, date_list)
@@ -107,6 +111,9 @@ class CafeteriaScraper(RequestScraper):
         try:
             with self:
                 parsed_html = self.parsed_html(self.base_url)
+                if parsed_html is None:
+                    raise ValueError(f'식단 페이지 요청 실패: {self.base_url}')
+
                 start_date, end_date, dishes = self._parse_menu_data(
                     parsed_html)
 

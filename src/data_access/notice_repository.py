@@ -11,26 +11,23 @@ class NoticeRepository:
         self.client = get_supabase_client()
 
     def get_notice_categories(self) -> List[NoticeCategory]:
-        try:
-            response = self.client.table(CATEGORY).select(
-                '*, department(department_en, department_ko)').execute()
-            raw_data = response.data
+        response = self.client.table(CATEGORY).select(
+            '*, department(department_en, department_ko)').execute()
+        raw_data = response.data or []
 
-            return [
-                NoticeCategory(
-                    id=item['id'],
-                    category=item['category'],
-                    mi=item['mi'],
-                    bbs_id=item['bbs_id'],
-                    department_id=item['department_id'],
-                    last_ntt_sn=item['last_ntt_sn'],
-                    department_en=item['department']['department_en'],
-                    department_ko=item['department']['department_ko']
-                )
-                for item in raw_data
-            ]
-        except Exception:
-            return []
+        return [
+            NoticeCategory(
+                id=item['id'],
+                category=item['category'],
+                mi=item['mi'],
+                bbs_id=item['bbs_id'],
+                department_id=item['department_id'],
+                last_ntt_sn=item['last_ntt_sn'],
+                department_en=item['department']['department_en'],
+                department_ko=item['department']['department_ko']
+            )
+            for item in raw_data
+        ]
 
     def get_category_notices(self, category_id: int) -> List[Notice]:
         return self.client.table(NOTICE).select('*').eq('category_id', category_id).execute().data
