@@ -5,13 +5,15 @@ from selenium.webdriver.common.by import By
 from ..config.settings import ACADEMIC_CALENDAR_URL
 from typing import List
 from ..models.academic_calendar import AcademicCalendar
-from ..data_access.academic_calendar_repository import insert_schedules, delete_schedules
+from ..data_access.academic_calendar_repository import AcademicCalendarRepository
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 
+
 class AcademicCalendarScraper(SeleniumScraper):
-    def __init__(self):
+    def __init__(self, repository: AcademicCalendarRepository = None):
         super().__init__(base_url=ACADEMIC_CALENDAR_URL)
+        self.repository = repository or AcademicCalendarRepository()
 
     def get_scraper_name(self):
         return "학사일정"
@@ -38,8 +40,8 @@ class AcademicCalendarScraper(SeleniumScraper):
                     self._process_current_page(result)
                     self._click_next_year()
                 
-                delete_schedules()
-                insert_schedules(result)
+                self.repository.delete_schedules()
+                self.repository.insert_schedules(result)
                 print('[학사일정] 학사일정 데이터 교체 완료')
 
         except Exception as e:
