@@ -1,5 +1,5 @@
 from ..scrapers.base import RequestScraper
-from ..data_access.notice_repository import get_notice_categories, get_category_notices, insert_notices, update_notice, update_category_last_ntt_sn
+from ..data_access.notice_repository import NoticeRepository
 from typing import List, Optional
 from ..models.notice import Notice, NoticeCategory
 from datetime import datetime
@@ -12,15 +12,16 @@ class NoticeScraper(RequestScraper):
     MAX_NOTICES = 5
     MAX_NOTICE_AGE_DAYS = 30
 
-    def __init__(self):
+    def __init__(self, repository: NoticeRepository = None):
         super().__init__(base_url=None)
+        self.repository = repository or NoticeRepository()
 
     def get_scraper_name(self) -> str:
         return '공지사항'
 
     def scrape_data(self, use_multithreading=False) -> None:
         """메인 스크래핑 프로세스를 실행합니다."""
-        categories = get_notice_categories()
+        categories = self.repository.get_notice_categories()
 
         # 멀티스레딩 사용 여부에 따라 스크래핑 방식을 변경
         if use_multithreading:
@@ -102,17 +103,14 @@ class NoticeScraper(RequestScraper):
 
     def _update_notices(self, category: NoticeCategory, new_notices: List[Notice]) -> None:
         """공지사항을 데이터베이스에 업데이트합니다."""
-        existing_notices = get_category_notices(category.id)
+        existing_notices = self.repository.get_category_notices(category.id)
         empty_space = self.MAX_NOTICES - len(existing_notices)
 
-        # 새 공지사항 삽입
         if empty_space > 0:
-            insert_notices(new_notices[:empty_space])
+            self.repository.insert_notices(new_notices[:empty_space])
 
-        # 기존 공지사항 업데이트
         for i, notice in enumerate(new_notices[empty_space:]):
-            update_notice(notice, existing_notices[i]['id'])
+            self.repository.update_notice(notice, existing_notices[i]['id'])
 
-        # 마지막 공지사항 번호 업데이트
-        update_category_last_ntt_sn(
+        self.repository.update_category_last_ntt_sn(
             category.id, new_notices[0].ntt_sn)

@@ -3,25 +3,27 @@ from bs4 import BeautifulSoup
 from datetime import datetime, timedelta
 from selenium.webdriver.common.by import By
 from ..config.settings import ACADEMIC_CALENDAR_URL
-from typing import List
+from typing import List, Optional
 from ..models.academic_calendar import AcademicCalendar
-from ..data_access.academic_calendar_repository import insert_schedules, delete_schedules
+from ..data_access.academic_calendar_repository import AcademicCalendarRepository
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 
+
 class AcademicCalendarScraper(SeleniumScraper):
-    def __init__(self):
+    def __init__(self, repository: AcademicCalendarRepository = None):
         super().__init__(base_url=ACADEMIC_CALENDAR_URL)
+        self.repository = repository or AcademicCalendarRepository()
 
     def get_scraper_name(self):
         return "학사일정"
 
-    def check_duplicate(self, schedule_object, result):
+    def check_duplicate(self, schedule: AcademicCalendar, result: List[AcademicCalendar]) -> bool:
         return any(
-            item['calendar_type'] == schedule_object['calendar_type'] and
-            item['start_date'] == schedule_object['start_date'] and
-            item['end_date'] == schedule_object['end_date'] and
-            item['content'] == schedule_object['content']
+            item.calendar_type == schedule.calendar_type and
+            item.start_date == schedule.start_date and
+            item.end_date == schedule.end_date and
+            item.content == schedule.content
             for item in result
         )
 
@@ -30,16 +32,20 @@ class AcademicCalendarScraper(SeleniumScraper):
             with self as scraper:
                 scraper.driver.get(self.base_url)
                 result: List[AcademicCalendar] = []
-                
+
                 for _ in range(2):  # 올해, 내년 학사일정
                     WebDriverWait(scraper.driver, 10).until(
-                        EC.presence_of_element_located((By.XPATH, '//*[@id="schdul3"]/div/table/tbody'))
+                        EC.presence_of_element_located(
+                            (By.XPATH, '//*[@id="schdul3"]/div/table/tbody'))
                     )
                     self._process_current_page(result)
                     self._click_next_year()
-                
-                delete_schedules()
-                insert_schedules(result)
+
+                if not result:
+                    raise ValueError("학사일정 데이터가 없습니다.")
+
+                self.repository.delete_schedules()
+                self.repository.insert_schedules(result)
                 print('[학사일정] 학사일정 데이터 교체 완료')
 
         except Exception as e:
@@ -55,7 +61,7 @@ class AcademicCalendarScraper(SeleniumScraper):
             if schedule and not self.check_duplicate(schedule, result):
                 result.append(schedule)
 
-    def _extract_schedule(self, a_element):
+    def _extract_schedule(self, a_element) -> Optional[AcademicCalendar]:
         onclick_value = a_element['href']
         start_date = datetime.strptime(onclick_value.split("'")[3], '%Y/%m/%d')
         end_date = datetime.strptime(onclick_value.split("'")[5], '%Y/%m/%d')
@@ -68,17 +74,17 @@ class AcademicCalendarScraper(SeleniumScraper):
         category_end_idx = contents.find(']')
 
         if category_start_idx == -1 or category_end_idx == -1:
-            return None 
+            return None
 
         category = contents[category_start_idx + 1:category_end_idx].strip()
         content = contents[category_end_idx + 1:].strip()
 
-        return {
-            'calendar_type': 1 if category == '학부' else 2,
-            'start_date': start_date.isoformat(),
-            'end_date': end_date.isoformat(),
-            'content': content
-        }
+        return AcademicCalendar(
+            calendar_type=1 if category == '학부' else 2,
+            start_date=start_date,
+            end_date=end_date,
+            content=content
+        )
 
     def _click_next_year(self):
         next_year_button = self.driver.find_element(

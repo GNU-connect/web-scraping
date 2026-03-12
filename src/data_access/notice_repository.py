@@ -6,13 +6,16 @@ NOTICE = 'notice'
 CATEGORY = 'notice_category'
 
 
-def get_notice_categories() -> List[NoticeCategory]:
-    try:
-        response = get_supabase_client().table(CATEGORY).select(
-            f'*, department(department_en, department_ko)').execute()
-        raw_data = response.data
+class NoticeRepository:
+    def __init__(self):
+        self.client = get_supabase_client()
 
-        categories = [
+    def get_notice_categories(self) -> List[NoticeCategory]:
+        response = self.client.table(CATEGORY).select(
+            '*, department(department_en, department_ko)').execute()
+        raw_data = response.data or []
+
+        return [
             NoticeCategory(
                 id=item['id'],
                 category=item['category'],
@@ -26,36 +29,23 @@ def get_notice_categories() -> List[NoticeCategory]:
             for item in raw_data
         ]
 
-        return categories
+    def get_category_notices(self, category_id: int) -> List[Notice]:
+        return self.client.table(NOTICE).select('*').eq('category_id', category_id).execute().data
 
-    except Exception:
-        return []
+    def insert_notices(self, notices: List[Notice]) -> None:
+        if notices:
+            self.client.table(NOTICE) \
+                .insert([vars(notice) for notice in notices]) \
+                .execute()
 
-
-def get_category_notices(category_id: int) -> List[Notice]:
-    """기존 공지사항을 가져옵니다."""
-    return get_supabase_client().table(NOTICE).select('*').eq('category_id', category_id).execute().data
-
-
-def insert_notices(notices: List[Notice]) -> None:
-    """새 공지사항을 삽입합니다."""
-    if notices:
-        get_supabase_client().table(NOTICE) \
-            .insert([vars(notice) for notice in notices]) \
+    def update_notice(self, notice: Notice, notice_id: int) -> None:
+        self.client.table(NOTICE) \
+            .update(vars(notice)) \
+            .eq('id', notice_id) \
             .execute()
 
-
-def update_notice(notice: Notice, notice_id: int) -> None:
-    """기존 공지사항을 업데이트합니다."""
-    get_supabase_client().table(NOTICE) \
-        .update(vars(notice)) \
-        .eq('id', notice_id) \
-        .execute()
-
-
-def update_category_last_ntt_sn(category_id: int, last_ntt_sn: int) -> None:
-    """카테고리의 마지막 공지사항 번호를 업데이트합니다."""
-    get_supabase_client().table(CATEGORY) \
-        .update({'last_ntt_sn': last_ntt_sn}) \
-        .eq('id', category_id) \
-        .execute()
+    def update_category_last_ntt_sn(self, category_id: int, last_ntt_sn: int) -> None:
+        self.client.table(CATEGORY) \
+            .update({'last_ntt_sn': last_ntt_sn}) \
+            .eq('id', category_id) \
+            .execute()
