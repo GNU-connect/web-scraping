@@ -2,6 +2,15 @@ from dataclasses import dataclass
 from datetime import datetime
 from typing import Optional
 
+
+@dataclass
+class DishSlotContext:
+    date: datetime
+    day: str
+    meal_time: str
+    dish_type: Optional[str]
+
+
 @dataclass
 class Cafeteria:
     id: int
@@ -14,6 +23,7 @@ class Cafeteria:
     form_type: int
     last_date: datetime
     thumbnail_url: str
+
 
 @dataclass
 class CafeteriaDish:
