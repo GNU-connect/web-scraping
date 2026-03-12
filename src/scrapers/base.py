@@ -6,7 +6,6 @@ import traceback
 from ..config.settings import CHROME_DRIVER_PATH
 import requests
 from bs4 import BeautifulSoup
-from ..utils.notifications import Slack_Notifier
 
 
 class BaseScraper(ABC):

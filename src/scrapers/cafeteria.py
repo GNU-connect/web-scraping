@@ -1,10 +1,9 @@
-from ..utils.date import get_midnight
 from .base import SeleniumScraper
 from bs4 import BeautifulSoup
 from ..models.cafeteria import Cafeteria, CafeteriaDish
 from typing import List, Any, Optional
-from datetime import datetime, timedelta
-from ..data_access.cafeteria_repository import delete_dishes_by_date_range, delete_past_dishes, save_dishes
+from datetime import datetime
+from ..data_access.cafeteria_repository import delete_dishes_by_date_range, save_dishes
 
 class CafeteriaScraper(SeleniumScraper):
     DISH_TYPE_LIST = ['주식', '국류', '찬류', '후식']
@@ -51,7 +50,7 @@ class CafeteriaScraper(SeleniumScraper):
             return '점심'
         return self.TIME_LIST[index]
     
-    def _process_special_cases(self, dish: str, dish_category: Optional[str], time: str) -> tuple[Optional[str], Optional[str]]:
+    def _process_special_cases(self, dish: str, dish_category: Optional[str]) -> tuple[Optional[str], Optional[str]]:
         """특수한 경우 처리"""
         return dish, dish_category
     
@@ -77,7 +76,7 @@ class CafeteriaScraper(SeleniumScraper):
                     continue
                     
                 processed_item, processed_category = self._process_special_cases(
-                    menu_item, current_category, time)
+                    menu_item, current_category)
                     
                 if processed_item:
                     dishes.append(CafeteriaDish(
@@ -115,10 +114,6 @@ class CafeteriaScraper(SeleniumScraper):
     
     def get_scraper_name(self):
         return f"식단 메뉴"
-
-    def delete_past_data(self):
-        """과거 데이터 삭제"""
-        delete_past_dishes(self.cafeteria.id, get_midnight(datetime.now()))
 
     def scrape_data(self):
         """새로운 식당 데이터를 스크래핑하는 함수"""

@@ -1,3 +1,4 @@
+from supabase import create_client, Client
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.service import Service as ChromeService
@@ -9,7 +10,6 @@ import traceback
 import os
 from dotenv import load_dotenv
 load_dotenv(verbose=True)
-from supabase import create_client, Client
 
 url = os.getenv("SUPABASE_URL")
 key = os.getenv("SUPABASE_KEY")
@@ -18,6 +18,7 @@ supabase_client: Client = create_client(url, key)
 # 셀레니움 드라이버 로드
 driver_path = ChromeDriverManager().install()
 bucket = 'clicker'
+
 
 class ClickerScraper:
     def __init__(self, driver_path):
@@ -29,7 +30,8 @@ class ClickerScraper:
         options.add_argument("--headless=new")  # 최신 헤드리스 모드 사용
         options.add_argument("--disable-gpu")  # GPU 사용 비활성화 (일부 환경에서 필요)
         options.add_argument("--no-sandbox")  # 샌드박스 비활성화 (일부 환경에서 필요)
-        options.add_argument("--disable-dev-shm-usage")  # /dev/shm 사용 비활성화 (일부 환경에서 필요)
+        # /dev/shm 사용 비활성화 (일부 환경에서 필요)
+        options.add_argument("--disable-dev-shm-usage")
         service = ChromeService(self.driver_path)
         self.driver = webdriver.Chrome(service=service, options=options)
         return self
@@ -37,13 +39,13 @@ class ClickerScraper:
     def __exit__(self, exc_type, exc_value, traceback):
         if self.driver:
             self.driver.quit()
-    
+
     def fetch_seat_info(self, data):
         def save_screenshot_on_supabase(image_data, object_name):
-          supabase_client.storage.from_(bucket).update(file=image_data, path=object_name)
+            supabase_client.storage.from_(bucket).update(
+                file=image_data, path=object_name)
         data_id = data['id']
         base_url = data['url']
-        name = data['name']
         size_x = data['size_x']
         size_y = data['size_y']
         try:
@@ -53,7 +55,8 @@ class ClickerScraper:
                 time.sleep(1)
 
                 scraper.driver.set_window_size(size_x, size_y)
-                element = self.driver.find_element(By.ID, 'clicker_div_guide_map')
+                element = self.driver.find_element(
+                    By.ID, 'clicker_div_guide_map')
                 if element:
                     # 요소 스크린샷 찍기
                     image_data = element.screenshot_as_png
@@ -66,33 +69,34 @@ class ClickerScraper:
             Slack_Notifier().fail(error_message)
             traceback.print_exc()
 
+
 if __name__ == '__main__':
     datas = [{"id": 1,
              "name": "새 둥지 1열람실(2층)",
-             "url": "https://clicker.gnu.ac.kr/Clicker/UserSeat/20230321132944292?DeviceName=normal",
-             "size_x": "1920",
+              "url": "https://clicker.gnu.ac.kr/Clicker/UserSeat/20230321132944292?DeviceName=normal",
+              "size_x": "1920",
               "size_y": "800",
               },
              {
-              "id": 2,
-              "name": "새 둥지 2열람실(3층)",
-              "url": "https://clicker.gnu.ac.kr/Clicker/UserSeat/20230321141812873?DeviceName=normal",
-              "size_x": "1920",
-              "size_y": "920",
-             },
-             {
-              "id": 3,
-              "name": "2층 열람실 소통줄기",
-              "url": "https://clicker.gnu.ac.kr/Clicker/UserSeat/20231030135859682?DeviceName=normal",
-              "size_x": "1000",
-              "size_y": "1100",
-             },
-             {
-              "id": 4,
-              "name": "3층 열람실 사유잎새",
-              "url": "https://clicker.gnu.ac.kr/Clicker/UserSeat/20231030140209981?DeviceName=normal",
-              "size_x": "1920",
-              "size_y": "1200",
-             }]
+        "id": 2,
+        "name": "새 둥지 2열람실(3층)",
+        "url": "https://clicker.gnu.ac.kr/Clicker/UserSeat/20230321141812873?DeviceName=normal",
+        "size_x": "1920",
+        "size_y": "920",
+    },
+        {
+        "id": 3,
+        "name": "2층 열람실 소통줄기",
+        "url": "https://clicker.gnu.ac.kr/Clicker/UserSeat/20231030135859682?DeviceName=normal",
+        "size_x": "1000",
+        "size_y": "1100",
+    },
+        {
+        "id": 4,
+        "name": "3층 열람실 사유잎새",
+        "url": "https://clicker.gnu.ac.kr/Clicker/UserSeat/20231030140209981?DeviceName=normal",
+        "size_x": "1920",
+        "size_y": "1200",
+    }]
     for data in datas:
         ClickerScraper(driver_path).fetch_seat_info(data)

@@ -1,2 +1,2 @@
-from .cafeteria_repository import get_cafeterias, save_dishes, update_last_date
+from .cafeteria_repository import get_cafeterias, save_dishes
 from .academic_calendar_repository import insert_schedules, delete_schedules
