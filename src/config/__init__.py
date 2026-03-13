@@ -1,4 +1,4 @@
-from .settings import CHROME_DRIVER_PATH
+from .settings import get_chrome_driver_path
 # from .constants import *
 
-__all__ = ["CHROME_DRIVER_PATH"]
+__all__ = ["get_chrome_driver_path"]
