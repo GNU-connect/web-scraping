@@ -3,7 +3,7 @@ from selenium import webdriver
 from selenium.webdriver.chrome.service import Service as ChromeService
 from selenium.webdriver.chrome.options import Options
 import traceback
-from ..config.settings import CHROME_DRIVER_PATH
+from ..config.settings import get_chrome_driver_path
 import requests
 from bs4 import BeautifulSoup
 
@@ -34,15 +34,13 @@ class BaseScraper(ABC):
 class SeleniumScraper(BaseScraper):
     def __init__(self, base_url: str):
         super().__init__()
-        self.driver_path = CHROME_DRIVER_PATH
         self.base_url = base_url
 
     def __enter__(self):
-        if hasattr(self, 'driver_path'):
-            options = Options()
-            options.add_argument('headless')
-            service = ChromeService(self.driver_path)
-            self.driver = webdriver.Chrome(service=service, options=options)
+        options = Options()
+        options.add_argument('headless')
+        service = ChromeService(get_chrome_driver_path())
+        self.driver = webdriver.Chrome(service=service, options=options)
         return self
 
     def __exit__(self, exc_type, exc_value, traceback):
