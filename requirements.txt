@@ -39,7 +39,7 @@ langchain-core==0.2.37
 langchain-google-genai==1.0.10
 langchain-text-splitters==0.2.2
 langsmith==0.1.108
-lxml==5.1.0
+lxml==5.3.0
 marshmallow==3.22.0
 multidict==6.0.5
 mypy-extensions==1.0.0
