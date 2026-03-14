@@ -1,4 +1,4 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from datetime import datetime
 
 
@@ -7,3 +7,4 @@ class ShuttleTimetable:
     route_name: str
     timetable: dict
     updated_at: datetime
+    last_success_at: datetime = field(default_factory=datetime.now)

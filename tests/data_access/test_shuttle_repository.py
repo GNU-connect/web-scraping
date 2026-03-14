@@ -23,6 +23,7 @@ def sample_timetable():
         route_name='가좌캠퍼스 → 칠암캠퍼스',
         timetable={'오전': ['08:20', '09:00 (금요일 미운행)'], '오후': ['13:10 (금요일 미운행)', '13:40']},
         updated_at=datetime(2026, 3, 13, 9, 47, 30),
+        last_success_at=datetime(2026, 3, 14, 0, 0, 0),
     )
 
 
@@ -48,6 +49,12 @@ class TestUpsertTimetable:
         upsert_call = mock_client.table.return_value.upsert
         payload = upsert_call.call_args[0][0]
         assert payload['updated_at'] == '2026-03-13T09:47:30'
+
+    def test_upsert_timetable_passes_correct_last_success_at(self, repository, mock_client, sample_timetable):
+        repository.upsert_timetable(sample_timetable)
+        upsert_call = mock_client.table.return_value.upsert
+        payload = upsert_call.call_args[0][0]
+        assert payload['last_success_at'] == '2026-03-14T00:00:00'
 
     def test_upsert_timetable_uses_on_conflict_route_name(self, repository, mock_client, sample_timetable):
         repository.upsert_timetable(sample_timetable)
