@@ -14,6 +14,7 @@ class ShuttleRepository:
                 'route_name': timetable.route_name,
                 'timetable': timetable.timetable,
                 'updated_at': timetable.updated_at.isoformat(),
+                'last_success_at': timetable.last_success_at.isoformat(),
             },
             on_conflict='route_name',
         ).execute()
