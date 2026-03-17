@@ -2,7 +2,7 @@ name: Schedule Cafeteria
 on:
   workflow_dispatch:
   schedule:
-    - cron: "0 0-12 * * *"
+    - cron: "17 0-12 * * *"
 permissions:
   contents: read
   pull-requests: write
